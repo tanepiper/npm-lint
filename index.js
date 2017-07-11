@@ -49,6 +49,10 @@ checkFiles(cwd)
                 console[error.level](error.message);
             });
         });
+
+        if (!exitCode) {
+            console.log(`Your NPM file is all good`.bold.yellow + `\x20\u2713`.green);
+        }
         process.exit(exitCode);
     })
     .catch(error => {
