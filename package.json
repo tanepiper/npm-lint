@@ -7,6 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "npm-lint": "node index.js"
   },
+  "bin": {
+    "npm-lint": "./index.js"
+  },
   "author": "Tane Piper <piper.tane@gmail.com>",
   "license": "MIT",
   "dependencies": {

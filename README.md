@@ -1,7 +1,9 @@
 # package-linter
 A linter for npm &amp; node package.json files with a focus on security.
 
-This is currently a proof of concept for a package that reads a `.npmlint` file in a directory and from this can parse a `package.json` file and enforce these rules.
+[Github](https://github.com/tanepiper/package-linter) | [Issues](https://github.com/tanepiper/package-linter/issues)
+
+This is currently a proof of concept for a package that reads a `.npmlint.json` file in a directory and from this can parse a `package.json` file and enforce these rules.
 
 This could then be used in pre-commit/pre-push hooks.
 

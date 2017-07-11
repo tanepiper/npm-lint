@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const package = require('./package.json');
 
 const lintingRules = require('./.npmlint.json');
