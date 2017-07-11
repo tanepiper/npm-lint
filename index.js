@@ -24,6 +24,7 @@ fs.readdir(`${__dirname}/rules`, (err, ruleFiles) => {
     });
 
     Object.keys(rules).forEach(ruleKey => {
+        console.log(`Running rule ${ruleKey}`)
         const rule = rules[ruleKey];
         const ruleErrors = rule.processor(package, lintingRules[ruleKey]);
         errors = errors.concat(ruleErrors);
