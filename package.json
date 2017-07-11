@@ -1,6 +1,6 @@
 {
   "name": "npm-lint",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A configurable package.json linter with a focus on security",
   "main": "index.js",
   "scripts": {

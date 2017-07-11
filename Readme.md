@@ -1,11 +1,21 @@
 # package-linter
-A linter for npm &amp; node package.json files with a focus on security.
+A opinionated, but configurable linter for npm &amp; node package.json files with a focus on security.
 
-[Github](https://github.com/tanepiper/package-linter) | [Issues](https://github.com/tanepiper/package-linter/issues)
+[Github](https://github.com/tanepiper/npm-lint) | [Issues](https://github.com/tanepiper/npm-lint/issues) | [NPM](https://www.npmjs.com/package/npm-lint)
 
-This is currently a proof of concept for a package that reads a `.npmlint.json` file in a directory and from this can parse a `package.json` file and enforce these rules.
+## Install
 
-This could then be used in pre-commit/pre-push hooks.
+`npm i -g npm-lint`
+
+This is an early concept for a tool that reads a `.npmlint.json` file in a directory and from this can parse a `package.json` file and enforce these rules.
+
+> **Please note the APIs and commands are likely to change quite a bit**
+
+## Concept
+
+The concept on this tool is to enforce rules across many repositories within your organisation. By putting a `.npmlint.json` file in your root directory and running `npm-lint` the tool will check the file to ensure it meets your configuration.
+
+The focus is on security and being able to lock down where dependencies are resolved from, and where packages are published too and being able to implement this in pre-commit/pre-push hooks or CI environments
 
 The currently implemented options are:
 
