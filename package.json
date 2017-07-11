@@ -1,6 +1,6 @@
 {
   "name": "npm-lint",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A configurable package.json linter with a focus on security",
   "main": "index.js",
   "scripts": {
@@ -16,6 +16,10 @@
     "package-lock.json",
     "README.md"
   ],
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/tanepiper/package-linter.git"
+  },
   "author": "Tane Piper <piper.tane@gmail.com>",
   "license": "MIT",
   "dependencies": {
