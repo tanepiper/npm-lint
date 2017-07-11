@@ -1,0 +1,13 @@
+{
+    "include": [
+        "description",
+        "main",
+        "author",
+        "licence"
+    ],
+    "scripts": {
+        "allow": [
+            "node", "npm", "gulp", "echo"
+        ]
+    }
+}
