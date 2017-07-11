@@ -46,7 +46,11 @@ checkFiles(cwd)
                     exitCode = 1;
                 }
 
-                console[error.level](error.message);
+                const colours = {
+                    'error': 'red'
+                }
+
+                console[error.level](error.message[colours[error.level]]);
             });
         });
 
