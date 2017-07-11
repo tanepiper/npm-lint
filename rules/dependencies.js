@@ -10,38 +10,42 @@ module.exports = {
      */
     processor: (package, rules) => {
 
-        if (rules.sources && Object.keys(rules.sources.length) > 0) {
+        // if (rules.sources && Object.keys(rules.sources.length) > 0) {
 
-            const dependencyList = Object.keys(package.dependencies);
-            const semverOrSourceList = dependencyList.map(dep => package.dependencies[dep]);
+        //     const dependencyList = Object.keys(package.dependencies);
+        //     const semverOrSourceList = dependencyList.map(dep => package.dependencies[dep]);
 
-            const brokenRules = Object.keys(rules.sources).map(sourceKey => {
-                const sourceRule = rules.sources[sourceKey];
+        //     const brokenRules = Object.keys(rules.sources).map(sourceKey => {
+        //         const sourceRule = rules.sources[sourceKey];
+        //         let 
+        //         if (Array.isArray(sourceRule)) {
 
-                if (!source.includes(sourceOrSemver)) {
-                    return `Not a valid source ${sourceOrSemver}`;
-                }
-            }).filter(error => error).reduce((prev, curr) => {
-                return prev.concat(curr);
-            }, []);
+        //         }
 
-            return { dependencyList, brokenRules };
+        //         if (!source.includes(sourceOrSemver)) {
+        //             return `Not a valid source ${sourceOrSemver}`;
+        //         }
+        //     }).filter(error => error).reduce((prev, curr) => {
+        //         return prev.concat(curr);
+        //     }, []);
 
-            // const dependencySources = Object.keys(package.dependencies).map(dependencyName => {
-            //     const sourceOrSemver = package.dependencies[dependencyName];
+        //     return { dependencyList, brokenRules };
 
-            //     if (!semverRegex().test(sourceOrSemver)) {
-            //         return rules.sources.map(source => {
-            //             if (!source.includes(sourceOrSemver)) {
-            //                 return `Not a valid source ${sourceOrSemver}`;
-            //             }
-            //         }).filter(error => error);
-            //     }
-            // }).filter(error => error).reduce((prev, curr) => {
-            //     return prev.concat(curr);
-            // }, []);
+        //     // const dependencySources = Object.keys(package.dependencies).map(dependencyName => {
+        //     //     const sourceOrSemver = package.dependencies[dependencyName];
 
-            // return dependencySources;
-        }
+        //     //     if (!semverRegex().test(sourceOrSemver)) {
+        //     //         return rules.sources.map(source => {
+        //     //             if (!source.includes(sourceOrSemver)) {
+        //     //                 return `Not a valid source ${sourceOrSemver}`;
+        //     //             }
+        //     //         }).filter(error => error);
+        //     //     }
+        //     // }).filter(error => error).reduce((prev, curr) => {
+        //     //     return prev.concat(curr);
+        //     // }, []);
+
+        //     // return dependencySources;
+        // }
     }
 }

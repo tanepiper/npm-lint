@@ -2,11 +2,21 @@ module.exports = {
     name: 'Include Rule',
     key: 'include',
     processor: (package, includeRules) => {
-        return includeRules.map((include) => {
-            if (!package[include]) {
-                return `Package must include ${include}`;
-            }
-        }).filter(error => error);
+        return {
+            name: module.exports.name,
+            key: module.exports.key,
+            errors: includeRules
+                .map(include => {
+                    if (!package[include]) {
+                        return {
+                            type: module.exports.name,
+                            key: module.exports.key,
+                            message: `Package must include ${include}`,
+                            level: 'error'
+                        }
+                    }
+                })
+                .filter(error => error)
+        };
     }
-}
-
+};
