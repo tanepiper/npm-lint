@@ -22,7 +22,7 @@ module.exports = {
                                 return {
                                     type: module.exports.name,
                                     key: module.exports.key,
-                                    message: `Script ${scriptName} has a unknown executable ${exeFile}`,
+                                    message: `package.json script "${scriptName}" has a unknown executable "${exeFile}"`,
                                     level: 'error'
                                 };
                             }

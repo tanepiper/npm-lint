@@ -1,5 +1,5 @@
 {
-    "include": ["description", "main", "author", "license"],
+    "properties": ["description", "main", "author", "license"],
     "scripts": {
         "allow": ["node", "npm", "echo", "exit"]
     },

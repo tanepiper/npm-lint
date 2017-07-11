@@ -1,17 +1,17 @@
 module.exports = {
-    name: 'Include Rule',
-    key: 'include',
-    processor: (package, includeRules) => {
+    name: 'Property Rule',
+    key: 'properties',
+    processor: (package, propertiesRules) => {
         return {
             name: module.exports.name,
             key: module.exports.key,
-            errors: includeRules
-                .map(include => {
-                    if (!package[include]) {
+            errors: propertiesRules
+                .map(property => {
+                    if (!package[property]) {
                         return {
                             type: module.exports.name,
                             key: module.exports.key,
-                            message: `Package must include ${include}`,
+                            message: `package.json must property "${property}"`,
                             level: 'error'
                         }
                     }
