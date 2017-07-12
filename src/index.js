@@ -1,23 +1,65 @@
 let exitCode = 0;
 
+process.on('unhandledRejection', function(err) {
+  /*eslint-disable */
+  console.log(err.stack);
+  process.exit(1);
+  /*eslint-enable */
+});
+
+process.on('uncaughtException', function(exception) {
+  /*eslint-disable */
+  console.log(exception); // to see your exception details in the console
+  process.exit(1);
+  /*eslint-enable */
+});
+
 require('colors');
-console.log(`Running npm-linter`.green.underline);
 
 const loki = require('lokijs');
 
+const finalResults = new loki('npm-lint.json');
+
+const dataObj = {
+  workingDirectory: process.cwd(),
+  info: finalResults.addCollection('info', { disableChangesApi: false }),
+  errors: finalResults.addCollection('errors', { disableChangesApi: false }),
+  warnings: finalResults.addCollection('warnings', { disableChangesApi: false })
+};
+
+dataObj.info.on('insert', result => {
+  console.info(`Info: ${result.message}`.gray);
+});
+
+dataObj.errors.on('insert', result => {
+  console.error(`Error: ${result.message}`.red);
+});
+
+dataObj.warnings.on('insert', result => {
+  console.info(`Warning: ${result.message}`.yellow);
+});
+
+dataObj.info.insert({
+  message: `${`Running npm-linter`.green}`.underline.bgBlue
+});
+
 const Table = require('cli-table');
-const cwd = process.cwd();
 
 const createContext = require('./lib/create-context');
+const NoPackageFoundError = require('./errors/no-package-json-error');
+
 const loadRule = require('./lib/load-rule');
 const loadScan = require('./lib/load-scan');
 
 const init = async function init() {
   let context;
   try {
-    context = await createContext(cwd);
+    context = await createContext(dataObj);
   } catch (e) {
-    return e;
+    if (e instanceof NoPackageFoundError) {
+      return console.error('NoPackageFoundError', e.message);
+    }
+    throw e;
   }
 
   const allRules = {};
@@ -25,40 +67,45 @@ const init = async function init() {
     allRules[key] = loadRule(key, __dirname);
   });
 
-  console.log(`Using Rules: `.bold + `${Object.keys(allRules).join(', ')}`);
+  dataObj.info.insert({
+    message: `Using Rules: `.bold + `${Object.keys(allRules).join(', ')}`
+  });
 
-  const result = await Object.keys(allRules).map(async key => {
-    const rules = allRules[key];
-    let errors;
+  return await Object.keys(allRules).map(async ruleKey => {
+    const rules = allRules[ruleKey];
+    let results;
     try {
-      errors = await rules.processor(context, context.rules[key]);
+      results = await rules.processor(context, context.rules[key]);
     } catch (e) {
       return e;
     }
+
+    let { name, key, errors, warnings } = results;
     return { key, rules, errors };
   });
-
-  return result;
 };
 
 init().then(async results => {
-    await results.forEach(async result => {
-        await result.then(info => {
-            console.log(`${info.errors.name}`.blue.underline + ` [Total issues: ${'' + info.errors.errors.length + ''.yellow}]`.bold);
-            if (info.errors.errors.length > 0) {
-                exitCode = 1;
-            }
-            info.errors.errors.forEach(error => {
-                console.log(`${error.message}`.red);
-            });
-        });
+  await results.forEach(async result => {
+    await result.then(info => {
+      console.log(
+        `${info.errors.name}`.blue.underline +
+          ` [Total issues: ${'' + info.errors.errors.length + ''.yellow}]`.bold
+      );
+      if (info.errors.errors.length > 0) {
+        exitCode = 1;
+      }
+      info.errors.errors.forEach(error => {
+        console.log(`${error.message}`.red);
+      });
     });
+  });
 
-    if (!exitCode) {
-        console.log('npm-lint: No issues found'.green.bold);
-    }
+  if (!exitCode) {
+    console.log('npm-lint: No issues found'.green.bold);
+  }
 
-    process.exit(exitCode);
+  process.exit(exitCode);
 });
 
 // .then(context => {

@@ -13,11 +13,10 @@
       "repository"
     ],
     "scripts": {
-      "allow": ["node", "npm", "echo", "exit"]
+      "allow": ["node", "npm", "ava", "webpack"]
     },
     "dependencies": {
-      "checkLatest": false,
-      "sources": ["latest", "https://github.com", "http://bitbucket.org"]
+      "checkLatest": false
     }
   }
 }

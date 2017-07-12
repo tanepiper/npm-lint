@@ -6,17 +6,19 @@
     "registry": "https://registry.npmjs.org"
   },
   "description": "A configurable package.json linter with a focus on security",
-  "main": "src/index.js",
+  "main": "bin/index.js",
   "scripts": {
+    "lint": "node src/index.js",
     "test": "ava",
     "build": "webpack",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "watch": "webpack --watch"
   },
   "bin": {
-    "npm-lint": "src/index.js"
+    "npm-lint": "bin/index.js"
   },
   "files": [
-    "src/**/*",
+    "bin/index.js",
     "default/",
     "package-lock.json",
     "README.md"
@@ -51,11 +53,7 @@
   },
   "devDependencies": {
     "ava": "^0.20.0",
-    "babel-cli": "^6.24.1",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
     "clean-webpack-plugin": "^0.1.16",
-    "del": "^3.0.0",
     "nodemon": "^1.11.0",
     "webpack": "^3.2.0"
   },

@@ -3,14 +3,18 @@ const { promisify } = require('util');
 const fs = require('fs');
 const readFileAsync = promisify(fs.readFile);
 
-module.exports = async cwd => {
-  const context = {
-    projectRoot: cwd,
-    packageFile: `${cwd}/package.json`,
-    npmLintFile: '',
-    options: {},
-    rules: {}
-  };
+const NoPackageFoundError = require('./../errors/no-package-json-error');
+
+module.exports = async dataObj => {
+  const context = Object.assign(
+    {
+      packageFile: `${dataObj.workingDirectory}/package.json`,
+      npmLintFile: '',
+      options: {},
+      rules: {}
+    },
+    dataObj
+  );
 
   // First we try load the package.json where this command has been run
   let pkg;
@@ -18,35 +22,40 @@ module.exports = async cwd => {
     pkg = await readFileAsync(context.packageFile, 'utf-8');
     context.package = JSON.parse(pkg);
   } catch (e) {
-    return new Error(
+    // If no package file it found we want to exit early
+    let error = new NoPackageFoundError(
       `No valid ${'package.json'.yellow} found at ${cwd.yellow}`.bold
     );
+    throw error;
   }
 
   // Next we parse the package.json for a npmLint key, if there is not one we take this
   // opertunity to set default values or an empty object in case of issues
   let npmLint;
-  context.options = pkg.npmLint && pkg.npmLint.options || defaultNpmLint.options || {};
-  context.rules = pkg.npmLint && pkg.npmLint.rules || defaultNpmLint.rules || {};
+  context.options =
+    (pkg.npmLint && pkg.npmLint.options) || defaultNpmLint.options || {};
+  context.rules =
+    (pkg.npmLint && pkg.npmLint.rules) || defaultNpmLint.rules || {};
   context.npmLintFile =
     Object.keys(context.options).length > 0 ||
     Object.keys(context.rules).length > 0
-      ? `${cwd}/package.json`
+      ? `${dataObj.workingDirectory}/package.json`
       : `${__dirname}/../default/.npmlint.json`;
 
   // Now we try read the local .npmlint.json which overides all settings
   try {
-    npmLint = await readFileAsync(`${cwd}/.npmlint.json`);
+    npmLint = await readFileAsync(`${dataObj.workingDirectory}/.npmlint.json`);
     let result = JSON.parse(npmLint);
     if (result) {
       context.options = result.options || {};
       context.rules = result.rules || {};
-      context.npmLintFile = `${cwd}/.npmlint.json`;
+      context.npmLintFile = `${dataObj.workingDirectory}/.npmlint.json`;
     }
   } catch (e) {
-    return new Error(
-      `No ${'.npmlint.json'.yellow} found at ${cwd.yellow}; using defaults`.bold
-    );
+    context.warnings.insert({
+      message: `No ${'.npmlint.json'.bgRed } found at ${dataObj.workingDirectory
+        .bgRed}; using defaults`
+    });
   }
 
   // Now we need to add name and version to always be checked in properties
