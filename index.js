@@ -21,13 +21,9 @@ let errors = [];
 const rules = {};
 
 checkFiles(cwd)
-    .then(result => {
-        const { package, projectRules } = result;
+    .then(context => {
 
-        //console.log('Package', package);
-        //console.log('Project Rules', projectRules);
-
-        const rulesToRun = Object.keys(projectRules).map(key => {
+        const rulesToRun = Object.keys(context.projectRules).map(key => {
             return {
                 key,
                 module: loadRule(key, __dirname)
@@ -35,31 +31,51 @@ checkFiles(cwd)
         });
         
         const errorsGroups = rulesToRun.map(rule => {
-            return rule.module.processor(package, projectRules[rule.key]);
+            return rule.module.processor(context, context.projectRules[rule.key]);
         }).filter(error => error);
 
-        errorsGroups.forEach(errorGroup => {
-            if (errorGroup.errors) {
-                errorGroup.errors.forEach(error => {
+        Promise.all(errorsGroups).then(() => {
+            console.log(arguments);
 
-                    // If we have an error, and the exit code isn't set, then set it to 1
-                    if (error.level === 'error' && !exitCode) {
-                        exitCode = 1;
-                    }
+        //     .then(resolved => {
+        //     resolved.forEach(display => {
+        //         if (display.name === 'latest') {
+        //             const table = new Table({
+        //                 head: ['Package', 'Package Version', 'Latest Version'],
+        //                 colWidths: [40, 30, 30]
+        //             });
 
-                    const colours = {
-                        'error': 'red'
-                    }
-
-                    console[error.level](error.message[colours[error.level]]);
-                });
-            }
+        //             Object.keys(display.upgrades).forEach(dep => {
+        //                 table.push([dep, context.package.dependencies[dep], display.upgrades[dep]]);
+        //             });
+        //             console.log(table.toString());
+        //         }
+        //     });
+        // });
         });
 
-        if (!exitCode) {
-            console.log(`Your NPM file is all good`.bold.yellow + `\x20\u2713`.green);
-        }
-        process.exit(exitCode);
+        // errorsGroups.forEach(errorGroup => {
+        //     if (errorGroup.errors) {
+        //         errorGroup.errors.forEach(error => {
+
+        //             // If we have an error, and the exit code isn't set, then set it to 1
+        //             if (error.level === 'error' && !exitCode) {
+        //                 exitCode = 1;
+        //             }
+
+        //             const colours = {
+        //                 'error': 'red'
+        //             }
+
+        //             console[error.level](error.message[colours[error.level]]);
+        //         });
+        //     }
+        // });
+
+        // if (!exitCode) {
+        //     console.log(`Your NPM file is all good`.bold.yellow + `\x20\u2713`.green);
+        // }
+        // process.exit(exitCode);
     })
     .catch(error => {
         console.log(error);

@@ -1,14 +1,14 @@
 module.exports = {
     name: 'Script rule',
     key: 'script',
-    processor: (package, scriptRules) => {
+    processor: (context, scriptRules) => {
 
         return {
             name: module.exports.name,
             key: module.exports.key,
-            errors: Object.keys(package.scripts)
+            errors: Object.keys(context.package.scripts)
                 .map(scriptName => {
-                    const script = package.scripts[scriptName];
+                    const script = context.package.scripts[scriptName];
 
                     // Find all executables called in this script
                     const exeFiles = script

@@ -1,13 +1,13 @@
 module.exports = {
     name: 'Property Rule',
     key: 'properties',
-    processor: (package, propertiesRules) => {
+    processor: (context, propertiesRules) => {
         return {
             name: module.exports.name,
             key: module.exports.key,
             errors: propertiesRules
                 .map(property => {
-                    if (!package[property]) {
+                    if (!context.package[property]) {
                         return {
                             type: module.exports.name,
                             key: module.exports.key,

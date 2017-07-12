@@ -1,9 +1,9 @@
 module.exports = {
     name: 'Version Rule',
     key: 'version',
-    processor: (package) => {
-        if (!package.version) {
-            return "Package must include version";
+    processor: (context) => {
+        if (!context.package.version) {
+            return 'Package must include version';
         }
     }
 }

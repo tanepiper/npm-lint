@@ -4,6 +4,7 @@
         "allow": ["node", "npm", "echo", "exit"]
     },
     "dependencies": {
+        "checkLatest": true,
         "sources": ["https://github.com", "http://bitbucket.org"]
     }
 }
