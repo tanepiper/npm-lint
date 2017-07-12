@@ -26,10 +26,7 @@
     "cli-table": "^0.3.1",
     "colors": "^1.1.2",
     "eslint": "^4.2.0",
-    "hdfgdf": "http://gist.github.com",
     "npm-check-updates": "^2.12.1",
-    "sdas": "sdasdas",
-    "sdasd": "http://github.com/foo/bar",
     "semver-regex": "^1.0.0"
   }
 }
