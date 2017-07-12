@@ -43,6 +43,7 @@ checkFiles(cwd)
                     if (!result.errors || (result.errors && result.errors.length === 0)) {
                         return console.log(`No Errors`.green);
                     }
+                    exitCode = 1;
                     result.errors.forEach(error => {
                         console.error(`${error.message}`.red.bold);
                     });
@@ -81,6 +82,7 @@ checkFiles(cwd)
                             } else {
                                 console.log('All dependencies are up to date'.underline.green.bold);
                             }
+                            process.exit(exitCode);
                         });
                     });
                 }
