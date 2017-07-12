@@ -1,6 +1,7 @@
 {
   "name": "npm-lint",
-  "version": "0.1.5",
+  "version": "0.1.6",
+  "preferGlobal": true,
   "description": "A configurable package.json linter with a focus on security",
   "main": "index.js",
   "scripts": {
@@ -11,9 +12,9 @@
     "npm-lint": "./index.js"
   },
   "files": [
-    "./lib",
-    "./rules",
-    "./default",
+    "lib/",
+    "rules/",
+    "default/",
     "index.js",
     "package-lock.json",
     "README.md"
