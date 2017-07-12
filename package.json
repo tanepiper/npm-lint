@@ -1,7 +1,10 @@
 {
   "name": "npm-lint",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "preferGlobal": true,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
   "description": "A configurable package.json linter with a focus on security",
   "main": "index.js",
   "scripts": {
