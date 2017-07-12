@@ -50,23 +50,26 @@ checkFiles(cwd)
                 return Promise.resolve(null);
             })
             .then(() => {
-
                 if (context.projectRules.dependencies.checkLatest) {
                     const scanner = loadScan('dependency_version_check', __dirname);
 
                     const result = scanner.processor(context);
                     result.then(results => {
                         results.result.then(upgrades => {
-                            const table = new Table({
-                                head: ['Package', 'Package Version', 'Latest Version'],
-                                colWidths: [40, 30, 30]
-                            });
+                            if (upgrades.upgrades && Object.keys(upgrades.upgrades).length > 0) {
+                                const table = new Table({
+                                    head: ['Package', 'Package Version', 'Latest Version'],
+                                    colWidths: [40, 30, 30]
+                                });
 
-                            Object.keys(upgrades.upgrades).forEach(upgrade => {
-                                table.push([upgrade, context.package.dependencies[upgrade], upgrades.upgrades[upgrade]]);
-                            });
-                            console.log(`Available Dependency Updates`.underline.cyan);
-                            console.log(table.toString());
+                                Object.keys(upgrades.upgrades).forEach(upgrade => {
+                                    table.push([upgrade, context.package.dependencies[upgrade], upgrades.upgrades[upgrade]]);
+                                });
+                                console.log(`Available Dependency Updates`.underline.cyan);
+                                console.log(table.toString());
+                            } else {
+                                console.log('All dependencies are up to date'.underline.green.bold);
+                            }
                         });
                     });
                 }
