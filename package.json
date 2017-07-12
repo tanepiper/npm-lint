@@ -6,26 +6,34 @@
     "registry": "https://registry.npmjs.org"
   },
   "description": "A configurable package.json linter with a focus on security",
-  "main": "index.js",
+  "main": "bin/index.js",
   "scripts": {
     "test": "ava",
-    "npm-lint": "node index.js"
+    "start": "babel-node index.js",
+    "build": "npm run clean && mkdir bin && npm run babel",
+    "babel": "babel -d bin src -s",
+    "prepublishOnly": "npm start && npm run build",
+    "clean": "rm -rf ./bin",
+    "watch": "nodemon --inspect --watch src --exec node_modules/.bin/babel-node src/index.js"
   },
   "bin": {
-    "npm-lint": "./index.js"
+    "npm-lint": "bin/index.js"
   },
   "files": [
-    "lib/",
-    "rules/",
-    "scans/",
+    "bin/",
     "default/",
-    "index.js",
     "package-lock.json",
     "README.md"
   ],
   "ava": {
-    "files": ["test/**/*-spec.js"],
-    "source": ["rules/**/*.js", "scans/**/*.js", "lib/**/*.js"]
+    "files": [
+      "test/**/*-spec.js"
+    ],
+    "source": [
+      "rules/**/*.js",
+      "scans/**/*.js",
+      "lib/**/*.js"
+    ]
   },
   "repository": {
     "type": "git",
@@ -37,10 +45,18 @@
     "cli-table": "^0.3.1",
     "colors": "^1.1.2",
     "eslint": "^4.2.0",
+    "loki": "^0.3.8",
+    "lokijs": "^1.5.0",
+    "npm": "^5.2.0",
     "npm-check-updates": "^2.12.1",
     "semver-regex": "^1.0.0"
   },
   "devDependencies": {
-    "ava": "^0.20.0"
-  }
+    "ava": "^0.20.0",
+    "babel-cli": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "nodemon": "^1.11.0"
+  },
+  "npmLint": {}
 }

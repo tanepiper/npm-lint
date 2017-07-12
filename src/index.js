@@ -2,15 +2,17 @@
 
 let exitCode = 0;
 
-require('colors');
-console.log(`Running package-linter`.green);
+import 'colors';
+console.log(`Running npm-linter`.green.underline);
 
-const Table = require('cli-table');
+import loki from 'lokijs';
+
+import Table from 'cli-table';
 const cwd = process.cwd();
 
-const checkFiles = require(`${__dirname}/lib/check-files`);
-const loadRule = require(`${__dirname}/lib/load-rule`);
-const loadScan = require(`${__dirname}/lib/load-scan`);
+import checkFiles from './lib/check-files';
+import loadRule from './lib/load-rule';
+import loadScan from './lib/load-scan';
 
 checkFiles(cwd)
     .then(context => {

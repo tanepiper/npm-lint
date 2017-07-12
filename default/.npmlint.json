@@ -1,5 +1,7 @@
 {
-    "options": {},
+    "options": {
+        
+    },
     "rules": {
         "properties": ["description", "main", "author", "license"],
         "scripts": {
