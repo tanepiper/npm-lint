@@ -8,7 +8,7 @@
   "description": "A configurable package.json linter with a focus on security",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "ava",
     "npm-lint": "node index.js"
   },
   "bin": {
@@ -23,6 +23,10 @@
     "package-lock.json",
     "README.md"
   ],
+  "ava": {
+    "files": ["test/**/*-spec.js"],
+    "source": ["rules/**/*.js", "scans/**/*.js", "lib/**/*.js"]
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/tanepiper/package-linter.git"
@@ -35,5 +39,8 @@
     "eslint": "^4.2.0",
     "npm-check-updates": "^2.12.1",
     "semver-regex": "^1.0.0"
+  },
+  "devDependencies": {
+    "ava": "^0.20.0"
   }
 }

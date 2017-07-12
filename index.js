@@ -15,20 +15,22 @@ const loadScan = require(`${__dirname}/lib/load-scan`);
 checkFiles(cwd)
     .then(context => {
         const rules = {};
-        
+
         // We load out rules via sync
-        Object.keys(context.projectRules).forEach(key => {
+        Object.keys(context.rules).forEach(key => {
             rules[key] = loadRule(key, __dirname);
         });
 
+        console.log(`Using Rules: `.bold +  `${Object.keys(rules).join(', ')}`);
+
         const rulesReports = Object.keys(rules).map(ruleKey => {
             const rule = rules[ruleKey];
-            return rule.processor(context, context.projectRules[rule.key]);
+            return rule.processor(context, context.rules[rule.key]);
         });
 
-        const results = Promise.all(rulesReports);
+        const resolvedResults = Promise.all(rulesReports);
 
-        results
+        resolvedResults
             .then(results => {
                 results.forEach(result => {
                     console.log(`${result.name}`.underline);
@@ -43,7 +45,7 @@ checkFiles(cwd)
                 return Promise.resolve(null);
             })
             .then(() => {
-                if (context.projectRules.dependencies.checkLatest) {
+                if (context.rules.dependencies.checkLatest) {
                     const scanner = loadScan('dependency_version_check', __dirname);
 
                     const result = scanner.processor(context);
@@ -81,6 +83,6 @@ checkFiles(cwd)
             });
     })
     .catch(error => {
-        console.log(error);
+        console.log(`${error.message}`.red.bold);
         process.exit(1);
     });

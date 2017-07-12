@@ -9,6 +9,19 @@ module.exports = {
      * @param {Object} The rules for this plugin
      */
     processor: (context, rules) => {
+        if (!context.package.dependencies) {
+            return Promise.resolve({
+                name: module.exports.name,
+                key: module.exports.key,
+                errors: [{
+                    type: module.exports.name,
+                    key: module.exports.key,
+                    message: `package.json does not contain dependencies but .npmlint.json contains rules`,
+                    level: 'error'
+                }]
+            });
+        }
+
         return Promise.resolve({
             name: module.exports.name,
             key: module.exports.key,

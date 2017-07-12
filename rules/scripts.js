@@ -1,7 +1,19 @@
 module.exports = {
     name: 'Script rule',
     key: 'scripts',
-    processor: (context, scriptRules) => {
+    processor: (context, rules) => {
+        if (!context.package.scripts) {
+            return Promise.resolve({
+                name: module.exports.name,
+                key: module.exports.key,
+                errors: [{
+                    type: module.exports.name,
+                    key: module.exports.key,
+                    message: `package.json does not contain scripts but .npmlint.json contains rules`,
+                    level: 'error'
+                }]
+            });
+        }
         return Promise.resolve({
             name: module.exports.name,
             key: module.exports.key,
@@ -14,7 +26,7 @@ module.exports = {
 
                     return exeFiles
                         .map(exeFile => {
-                            if (!scriptRules.allow.includes(exeFile)) {
+                            if (!rules.allow.includes(exeFile)) {
                                 return {
                                     type: module.exports.name,
                                     key: module.exports.key,
