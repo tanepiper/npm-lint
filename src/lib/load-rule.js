@@ -3,7 +3,7 @@ module.exports = (key, basedir) => {
     try {
         ruleFile = require(`${basedir}/rules/${key}.js`);
     } catch (e) {
-        return console.error(`Cannot load rule ${key}.js in ${basedir}/rules`);
+        return new Error(`Cannot load rule ${key}.js in ${basedir}/rules`);
     }
     return ruleFile;
 }

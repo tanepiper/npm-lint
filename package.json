@@ -6,21 +6,17 @@
     "registry": "https://registry.npmjs.org"
   },
   "description": "A configurable package.json linter with a focus on security",
-  "main": "bin/index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "ava",
-    "start": "babel-node index.js",
-    "build": "npm run clean && mkdir bin && npm run babel",
-    "babel": "babel -d bin src -s",
-    "prepublishOnly": "npm start && npm run build",
-    "clean": "rm -rf ./bin",
-    "watch": "nodemon --inspect --watch src --exec node_modules/.bin/babel-node src/index.js"
+    "build": "webpack",
+    "prepublishOnly": "npm run build"
   },
   "bin": {
-    "npm-lint": "bin/index.js"
+    "npm-lint": "src/index.js"
   },
   "files": [
-    "bin/",
+    "src/**/*",
     "default/",
     "package-lock.json",
     "README.md"
@@ -45,18 +41,23 @@
     "cli-table": "^0.3.1",
     "colors": "^1.1.2",
     "eslint": "^4.2.0",
+    "find-up": "^2.1.0",
     "loki": "^0.3.8",
     "lokijs": "^1.5.0",
     "npm": "^5.2.0",
     "npm-check-updates": "^2.12.1",
-    "semver-regex": "^1.0.0"
+    "semver-regex": "^1.0.0",
+    "source-map-support": "^0.4.15"
   },
   "devDependencies": {
     "ava": "^0.20.0",
     "babel-cli": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
-    "nodemon": "^1.11.0"
+    "clean-webpack-plugin": "^0.1.16",
+    "del": "^3.0.0",
+    "nodemon": "^1.11.0",
+    "webpack": "^3.2.0"
   },
   "npmLint": {}
 }

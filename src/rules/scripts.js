@@ -1,9 +1,9 @@
 module.exports = {
     name: 'Script rule',
     key: 'scripts',
-    processor: (context, rules) => {
+    processor: async (context, rules) => {
         if (!context.package.scripts) {
-            return Promise.resolve({
+            return {
                 name: module.exports.name,
                 key: module.exports.key,
                 errors: [{
@@ -12,9 +12,9 @@ module.exports = {
                     message: `package.json does not contain scripts but .npmlint.json contains rules`,
                     level: 'error'
                 }]
-            });
+            };
         }
-        return Promise.resolve({
+        return {
             name: module.exports.name,
             key: module.exports.key,
             errors: Object.keys(context.package.scripts)
@@ -40,6 +40,6 @@ module.exports = {
                 .reduce((prev, current) => {
                     return prev.concat(current);
                 }, [])
-        });
+        };
     }
 };

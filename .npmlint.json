@@ -1,0 +1,23 @@
+{
+  "rules": {
+    "properties": [
+      "description",
+      "main",
+      "author",
+      "license",
+      "publishConfig",
+      "main",
+      "bin",
+      "files",
+      "ava",
+      "repository"
+    ],
+    "scripts": {
+      "allow": ["node", "npm", "echo", "exit"]
+    },
+    "dependencies": {
+      "checkLatest": false,
+      "sources": ["latest", "https://github.com", "http://bitbucket.org"]
+    }
+  }
+}
