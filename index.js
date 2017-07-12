@@ -2,28 +2,20 @@
 
 let exitCode = 0;
 
-const colors = require('colors');
+require('colors');
 console.log(`Running package-linter`.green);
 
-const { promisify } = require('util');
-const fs = require('fs');
-const path = require('path');
 const Table = require('cli-table');
 const cwd = process.cwd();
-
-const readFileAsync = promisify(fs.readFile);
-const readDirAsync = promisify(fs.readdir);
 
 const checkFiles = require(`${__dirname}/lib/check-files`);
 const loadRule = require(`${__dirname}/lib/load-rule`);
 const loadScan = require(`${__dirname}/lib/load-scan`);
 
-// Check special rules first
-let errors = [];
-const rules = {};
-
 checkFiles(cwd)
     .then(context => {
+        const rules = {};
+        
         // We load out rules via sync
         Object.keys(context.projectRules).forEach(key => {
             rules[key] = loadRule(key, __dirname);

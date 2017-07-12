@@ -1,6 +1,4 @@
 const semverRegex = require('semver-regex');
-const ncu = require('npm-check-updates');
-const Table = require('cli-table');
 
 module.exports = {
     name: 'Dependency Rule',
@@ -14,7 +12,7 @@ module.exports = {
         return Promise.resolve({
             name: module.exports.name,
             key: module.exports.key,
-            errors: Object.keys(context.package.dependencies).map(dependency => {
+            errors: Object.keys(context.package.dependencies || {}).map(dependency => {
                 const semverOrPath = context.package.dependencies[dependency];
 
                 if (semverRegex().test(semverOrPath)) {
@@ -31,7 +29,7 @@ module.exports = {
                     }
                 }
             }).concat(
-                Object.keys(context.package.devDependencies).map(dependency => {    
+                Object.keys(context.package.devDependencies || {}).map(dependency => {    
                     const semverOrPath = context.package.devDependencies[dependency];
                     if (semverRegex().test(semverOrPath)) {
                         return;
