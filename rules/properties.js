@@ -2,7 +2,7 @@ module.exports = {
     name: 'Property Rule',
     key: 'properties',
     processor: (context, propertiesRules) => {
-        return {
+        return Promise.resolve({
             name: module.exports.name,
             key: module.exports.key,
             errors: propertiesRules
@@ -13,10 +13,10 @@ module.exports = {
                             key: module.exports.key,
                             message: `package.json must property "${property}"`,
                             level: 'error'
-                        }
+                        };
                     }
                 })
                 .filter(error => error)
-        };
+        });
     }
 };

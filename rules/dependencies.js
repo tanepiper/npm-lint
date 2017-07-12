@@ -11,37 +11,28 @@ module.exports = {
      * @param {Object} The rules for this plugin
      */
     processor: (context, rules) => {
-        const promisesToResolve = [];
+        return Promise.resolve({
+            name: module.exports.name,
+            key: module.exports.key,
+            errors: Object.keys(context.package.dependencies).map(dependency => {
+                const semverOrPath = context.package.dependencies[dependency];
 
-        if (rules.checkLatest) {
-            try {
-                promisesToResolve.push(
-                    ncu
-                        .run({
-                            packageData: JSON.stringify(context.package),
-                            args: Object.keys(context.package.dependencies),
-                            silent: false,
-                            jsonUpgraded: true
-                        })
-                        .then(upgrades => {
-                            return {
-                                name: 'latest',
-                                upgrades,
-                                totalUpgrades:
-                                    (upgrades &&
-                                        Object.keys(upgrades).length) ||
-                                    0
-                            };
-                        })
-                );
-            } catch (e) {
-                return e;
-            }
-        }
+                if (semverRegex().test(semverOrPath)) {
+                    return;
+                }
 
-        const resolved = Promise.all(promisesToResolve);
+                const checkInAllowedList = rules.sources.find(rule => semverOrPath.includes(rule));
+                if (!checkInAllowedList) {
+                    return {
+                        type: module.exports.name,
+                        key: module.exports.key,
+                        message: `package.json dependency "${dependency}" has a location that is now allowed "${semverOrPath}"`,
+                        level: 'error'
+                    }
+                }
+            }).filter(error => error)
+        });
 
-        return resolved;
         //resolved
 
         // .then(...args => {

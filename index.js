@@ -22,37 +22,54 @@ const rules = {};
 
 checkFiles(cwd)
     .then(context => {
-
-        const rulesToRun = Object.keys(context.projectRules).map(key => {
-            return {
-                key,
-                module: loadRule(key, __dirname)
-            }
+        // We load out rules via sync
+        Object.keys(context.projectRules).forEach(key => {
+            rules[key] = loadRule(key, __dirname);
         });
+
+        const rulesReports = Object.keys(rules).map(ruleKey => {
+            const rule = rules[ruleKey];
+            return rule.processor(context, context.projectRules[rule.key]);
+        });
+
+        const results = Promise.all(rulesReports);
         
-        const errorsGroups = rulesToRun.map(rule => {
-            return rule.module.processor(context, context.projectRules[rule.key]);
-        }).filter(error => error);
+        results.then((results)=> {
+            results.forEach(result => {
+                console.log(`${result.name}`.underline);
+                if (!result.errors || result.errors && result.errors.length === 0) {
+                    return console.log(`No Errors`.green);
+                }
+                result.errors.forEach(error => {
+                    console.error(`${error.message}`.red.bold);
+                })
 
-        Promise.all(errorsGroups).then(() => {
-            console.log(arguments);
-
-        //     .then(resolved => {
-        //     resolved.forEach(display => {
-        //         if (display.name === 'latest') {
-        //             const table = new Table({
-        //                 head: ['Package', 'Package Version', 'Latest Version'],
-        //                 colWidths: [40, 30, 30]
-        //             });
-
-        //             Object.keys(display.upgrades).forEach(dep => {
-        //                 table.push([dep, context.package.dependencies[dep], display.upgrades[dep]]);
-        //             });
-        //             console.log(table.toString());
-        //         }
-        //     });
-        // });
+            })
         });
+
+        // const errorsGroups = rulesToRun.map(rule => {
+        //     return rule.module.processor(context, context.projectRules[rule.key]);
+        // }).filter(error => error);
+
+        // Promise.all(errorsGroups).then(() => {
+        //     console.log(arguments);
+
+        // //     .then(resolved => {
+        // //     resolved.forEach(display => {
+        // //         if (display.name === 'latest') {
+        // //             const table = new Table({
+        // //                 head: ['Package', 'Package Version', 'Latest Version'],
+        // //                 colWidths: [40, 30, 30]
+        // //             });
+
+        // //             Object.keys(display.upgrades).forEach(dep => {
+        // //                 table.push([dep, context.package.dependencies[dep], display.upgrades[dep]]);
+        // //             });
+        // //             console.log(table.toString());
+        // //         }
+        // //     });
+        // // });
+        // });
 
         // errorsGroups.forEach(errorGroup => {
         //     if (errorGroup.errors) {

@@ -1,9 +1,8 @@
 module.exports = {
     name: 'Script rule',
-    key: 'script',
+    key: 'scripts',
     processor: (context, scriptRules) => {
-
-        return {
+        return Promise.resolve({
             name: module.exports.name,
             key: module.exports.key,
             errors: Object.keys(context.package.scripts)
@@ -11,10 +10,7 @@ module.exports = {
                     const script = context.package.scripts[scriptName];
 
                     // Find all executables called in this script
-                    const exeFiles = script
-                        .split('&&')
-                        .map(item => item.trim().split(' '))
-                        .map(item => item[0]);
+                    const exeFiles = script.split('&&').map(item => item.trim().split(' ')).map(item => item[0]);
 
                     return exeFiles
                         .map(exeFile => {
@@ -32,6 +28,6 @@ module.exports = {
                 .reduce((prev, current) => {
                     return prev.concat(current);
                 }, [])
-        };
+        });
     }
 };

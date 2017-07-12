@@ -5,6 +5,6 @@
     },
     "dependencies": {
         "checkLatest": true,
-        "sources": ["https://github.com", "http://bitbucket.org"]
+        "sources": ["latest", "https://github.com", "http://bitbucket.org"]
     }
 }
