@@ -30,7 +30,24 @@ module.exports = {
                         level: 'error'
                     }
                 }
-            }).filter(error => error)
+            }).concat(
+                Object.keys(context.package.devDependencies).map(dependency => {    
+                    const semverOrPath = context.package.devDependencies[dependency];
+                    if (semverRegex().test(semverOrPath)) {
+                        return;
+                    }
+                    const checkInAllowedList = rules.sources.find(rule => semverOrPath.includes(rule));
+                    if (!checkInAllowedList) {
+                        return {
+                            type: module.exports.name,
+                            key: module.exports.key,
+                            message: `package.json devDependencies "${dependency}" has a location that is now allowed "${semverOrPath}"`,
+                            level: 'error'
+                        }
+                    }
+                })
+            )
+            .filter(error => error)
         });
 
         //resolved

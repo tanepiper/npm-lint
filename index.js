@@ -56,14 +56,25 @@ checkFiles(cwd)
                     const result = scanner.processor(context);
                     result.then(results => {
                         results.result.then(upgrades => {
+                            
                             if (upgrades.upgrades && Object.keys(upgrades.upgrades).length > 0) {
+
                                 const table = new Table({
-                                    head: ['Package', 'Package Version', 'Latest Version'],
-                                    colWidths: [40, 30, 30]
+                                    head: ['Package', 'Type', 'Package Version', 'Latest Version'],
+                                    colWidths: [40, 30, 30, 30]
                                 });
 
                                 Object.keys(upgrades.upgrades).forEach(upgrade => {
-                                    table.push([upgrade, context.package.dependencies[upgrade], upgrades.upgrades[upgrade]]);
+                                    let dep;
+                                    let type = 'dependency';
+                                    if (context.package.dependencies[upgrade]) {
+                                        dep = context.package.dependencies[upgrade];
+                                    } else if (context.package.devDependencies[upgrade]) {
+                                        dep = context.package.devDependencies[upgrade];
+                                        type = 'devDependency';
+                                    }
+
+                                    table.push([upgrade, type, dep, upgrades.upgrades[upgrade]]);
                                 });
                                 console.log(`Available Dependency Updates`.underline.cyan);
                                 console.log(table.toString());
