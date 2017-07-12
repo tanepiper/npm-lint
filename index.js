@@ -39,19 +39,21 @@ checkFiles(cwd)
         }).filter(error => error);
 
         errorsGroups.forEach(errorGroup => {
-            errorGroup.errors.forEach(error => {
+            if (errorGroup.errors) {
+                errorGroup.errors.forEach(error => {
 
-                // If we have an error, and the exit code isn't set, then set it to 1
-                if (error.level === 'error' && !exitCode) {
-                    exitCode = 1;
-                }
+                    // If we have an error, and the exit code isn't set, then set it to 1
+                    if (error.level === 'error' && !exitCode) {
+                        exitCode = 1;
+                    }
 
-                const colours = {
-                    'error': 'red'
-                }
+                    const colours = {
+                        'error': 'red'
+                    }
 
-                console[error.level](error.message[colours[error.level]]);
-            });
+                    console[error.level](error.message[colours[error.level]]);
+                });
+            }
         });
 
         if (!exitCode) {

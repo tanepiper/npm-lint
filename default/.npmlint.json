@@ -4,10 +4,6 @@
         "allow": ["node", "npm", "echo", "exit"]
     },
     "dependencies": {
-        "sources": {
-            "npm": 0,
-            "https://github.com": 1,
-            "http://bitbucket.org": 1
-        }
+        "sources": ["https://github.com", "http://bitbucket.org"]
     }
 }
