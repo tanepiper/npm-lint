@@ -16,7 +16,7 @@ module.exports = {
                 .run({
                     packageData: JSON.stringify(context.package),
                     args: allPackages,
-                    silent: false,
+                    silent: true,
                     jsonUpgraded: true
                 })
                 .then(upgrades => {

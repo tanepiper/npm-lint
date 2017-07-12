@@ -16,7 +16,7 @@ module.exports = {
                 if (!dependency) {
                     return;
                 }
-                
+
                 const semverOrPath = context.package.dependencies[dependency];
 
                 if (semverRegex().test(semverOrPath)) {
@@ -28,7 +28,7 @@ module.exports = {
                     return {
                         type: module.exports.name,
                         key: module.exports.key,
-                        message: `package.json dependency "${dependency}" has a location that is now allowed "${semverOrPath}"`,
+                        message: `package.json dependency "${dependency}" has a version or location that is now allowed "${semverOrPath}"`,
                         level: 'error'
                     }
                 }
@@ -54,45 +54,5 @@ module.exports = {
             )
             .filter(error => error)
         });
-
-        //resolved
-
-        // .then(...args => {
-        //     console.log(...args);
-        // });
-
-        // if (rules.sources && rules.sources.length > 0) {
-        //     const dependencyList = Object.keys(package.dependencies);
-        //     const semverOrSourceList = dependencyList.map(
-        //         dep => package.dependencies[dep]
-        //     );
-
-        //     const notNpmDependencies = dependencyList
-        //         .map((dep, index) => {
-        //             if (!semverRegex().test(semverOrSourceList[index])) {
-        //                 return { dep, value: semverOrSourceList[index] };
-        //             }
-        //         })
-        //         .filter(dep => dep);
-
-        //     const brokenRules = rules.sources
-        //         .map(sourceKey => {
-        //             const dep = notNpmDependencies.find((d) => {
-        //                 console.log(d, sourceKey);
-        //                 return d.value.includes(sourceKey);
-        //             });
-        //             //console.log(dep);
-
-        //             if (!dep) {
-        //                 return `Not a valid source in package.json`;
-        //             }
-        //         })
-        //         .filter(error => error)
-        //         .reduce((prev, curr) => {
-        //             return prev.concat(curr);
-        //         }, []);
-
-        //     return { dependencyList, brokenRules };
-        // }
     }
 };
