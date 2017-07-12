@@ -53,7 +53,7 @@ The currently implemented options are:
 > ### `dependencies.sources`
 > An array of strings that are whitelisted to be in dependencies as non-npm sources.  For example if you point to a git dependency, or a private repository then these should be included.  You can reference the entire source or a domain. By default this will accept any valid semver as a valid NPM source. If you use non-semver values such as release tags you also need to include them in this file
 >
-> ** Example **
+> **Example**
 > ```json
 > {
 >   "dependencies": {
