@@ -13,6 +13,10 @@ module.exports = {
             name: module.exports.name,
             key: module.exports.key,
             errors: Object.keys(context.package.dependencies || {}).map(dependency => {
+                if (!dependency) {
+                    return;
+                }
+                
                 const semverOrPath = context.package.dependencies[dependency];
 
                 if (semverRegex().test(semverOrPath)) {
@@ -29,7 +33,10 @@ module.exports = {
                     }
                 }
             }).concat(
-                Object.keys(context.package.devDependencies || {}).map(dependency => {    
+                Object.keys(context.package.devDependencies || {}).map(dependency => {
+                    if (!dependency)  {
+                        return;
+                    }
                     const semverOrPath = context.package.devDependencies[dependency];
                     if (semverRegex().test(semverOrPath)) {
                         return;
