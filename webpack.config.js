@@ -15,7 +15,7 @@ fs
   });
 
 module.exports = {
-  entry: './src/index.js',
+  entry: ['babel-polyfill', './src/index.js'],
   target: 'node',
   devtool: 'sourcemap',
   output: {
@@ -43,5 +43,12 @@ module.exports = {
       raw: true,
       entryOnly: false
     })
-  ]
+  ],
+  module: {
+    loaders: [{
+      test: /\.js?$/,
+      exclude: /(node_modules)/,
+      loader: 'babel-loader'
+    }]
+  }
 };
