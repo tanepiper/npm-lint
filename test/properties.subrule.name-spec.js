@@ -1,7 +1,7 @@
 const test = require('ava');
 const sinon = require('sinon');
 
-const propertiesName = require('../rules/subrules/properties-name');
+const propertiesName = require('../bin/rules/subrules/properties-name');
 
 test('Check that name is less than 214 characters', t => {
     t.plan(2);
@@ -20,7 +20,7 @@ test('Check that name is less than 214 characters', t => {
     propertiesName.processor(context)
 
     t.true(spy.called);
-    t.true(spy.calledWith({message: 'package.json "name" property cannot be longer than 214 characters'}));
+    t.true(spy.calledWith({message: `${'package.json'.yellow} "${'name'.blue}" property cannot be longer than 214 characters`}));
 });
 
 test('Check that name does not begin with .', t => {
@@ -38,11 +38,11 @@ test('Check that name does not begin with .', t => {
     const spy = sinon.spy(context.errors, 'insert');
 
     propertiesName.processor(context)
-    t.true(spy.calledWith({message: 'package.json "name" property cannot start with a . (dot) or _ (underscore)'}));
+    t.true(spy.calledWith({message: `${'package.json'.yellow} "${'name'.blue}" property cannot start with a . (dot) or _ (underscore)`}));
 
     context.package.name = '_my-package';
     propertiesName.processor(context)
-    t.true(spy.calledWith({message: 'package.json "name" property cannot start with a . (dot) or _ (underscore)'}));
+    t.true(spy.calledWith({message: `${'package.json'.yellow} "${'name'.blue}" property cannot start with a . (dot) or _ (underscore)`}));
 });
 
 test('Check that name does not being with a capital letter', t => {

@@ -1,19 +1,5 @@
-type ContextObject = {
-    package: object;
-    options: object;
-    rules: object;
-    npmLintFile: string;
-    argv: object;
-    errors: {
-        insert: Function;
-    };
-    warnings: {
-        insert: Function;
-    };
-    info: {
-        insert: Function;
-    };
-};
+import * as constants from './constants';
+import * as types from './types';
 
 let exitCode = 0;
 
@@ -40,6 +26,8 @@ const Table = require('cli-table');
 const finalResults = new loki('npm-lint.json');
 
 const dataObj = {
+    constants,
+    types,
     argv: argv,
     scanSources: {
         dependency_version_check: require('../scans/dependency_version_check')
@@ -101,7 +89,7 @@ const init = async function init() {
     return context;
 };
 
-const run = async function run(context: ContextObject) {
+const run = async function run(context: types.ContextObject) {
     await Object.keys(context.rules).forEach(async ruleKey => {
         let rules;
         try {

@@ -1,9 +1,11 @@
 const nameValidCheck = /^[a-zA-Z0-9_-]*$/gi;
 
+import * as types from './../../src/types';
+
 module.exports = {
   name: 'Property Name Rule',
   key: 'properties.name',
-  processor: context => {
+  processor: (context:types.ContextObject) => {
     // Rules as per https://docs.npmjs.com/files/package.json#name
 
     const name = context.package.name;

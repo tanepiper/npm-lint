@@ -1,18 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
-var fs = require('fs');
 
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-
-var nodeModules = {};
-fs
-  .readdirSync('node_modules')
-  .filter(function(x) {
-    return ['.bin'].indexOf(x) === -1;
-  })
-  .forEach(function(mod) {
-    nodeModules[mod] = 'commonjs ' + mod;
-  });
+const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
   name: 'npm-lint',
@@ -26,7 +16,7 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js']
   },
-  externals: nodeModules,
+  externals: [nodeExternals()],
   plugins: [
     new CleanWebpackPlugin('./bin'),
     new webpack.ContextReplacementPlugin(
@@ -52,11 +42,17 @@ module.exports = {
     loaders: [{
       test: /\.js?$/,
       exclude: /(node_modules)/,
-      loader: 'babel-loader'
+      loader: 'babel-loader',
+      options: {
+					cacheDirectory: true
+				}
     }, {
       test: /\.ts?$/,
       exclude: /(node_modules)/,
-      loader: 'ts-loader'
+      loader: 'ts-loader',
+      options: {
+					cacheDirectory: true
+				}
     }]
   }
 };
