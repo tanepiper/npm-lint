@@ -11,7 +11,7 @@
     "lint": "node src/index.js",
     "test": "ava",
     "build": "webpack",
-    "prepublishOnly": "npm run lint && npm run build",
+    "prepublishOnly": "npm run lint",
     "watch": "webpack --watch"
   },
   "bin": {
@@ -30,9 +30,7 @@
       "test/**/*-spec.js"
     ],
     "source": [
-      "rules/**/*.js",
-      "scans/**/*.js",
-      "lib/**/*.js"
+      "src/**/*.js"
     ]
   },
   "repository": {
@@ -45,8 +43,6 @@
     "cli-table": "^0.3.1",
     "colors": "^1.1.2",
     "eslint": "^4.2.0",
-    "find-up": "^2.1.0",
-    "loki": "^0.3.8",
     "lokijs": "^1.5.0",
     "npm": "^5.2.0",
     "npm-check-updates": "^2.12.1",

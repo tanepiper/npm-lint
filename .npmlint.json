@@ -1,22 +1,23 @@
-{
-  "rules": {
-    "properties": [
-      "description",
-      "main",
-      "author",
-      "license",
-      "publishConfig",
-      "main",
-      "bin",
-      "files",
-      "ava",
-      "repository"
-    ],
-    "scripts": {
-      "allow": ["node", "npm", "ava", "webpack"]
-    },
-    "dependencies": {
-      "checkLatest": false
-    }
-  }
-}
+{
+  "rules": {
+    "properties": [
+      "description",
+      "main",
+      "author",
+      "license",
+      "publishConfig",
+      "main",
+      "bin",
+      "files",
+      "ava",
+      "repository"
+    ],
+    "scripts": {
+      "allow": ["node", "npm", "ava", "webpack"]
+    },
+    "dependencies": {
+      "checkLatest": true,
+      "sources": ["https://github.com"]
+    }
+  }
+}

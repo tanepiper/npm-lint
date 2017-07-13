@@ -3,8 +3,6 @@ const { promisify } = require('util');
 const fs = require('fs');
 const readFileAsync = promisify(fs.readFile);
 
-const NoPackageFoundError = require('./../errors/no-package-json-error');
-
 module.exports = async dataObj => {
   const context = Object.assign(
     {
