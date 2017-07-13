@@ -7,11 +7,13 @@ A opinionated, but configurable linter for npm &amp; node package.json files wit
 
 `npm i -g npm-lint`
 
-This is an early concept for a tool that reads a `.npmlint.json` file in a directory and from this can parse a `package.json` file and enforce these rules.
+`npm-lint` is build using Node 8 as it uses `async/await` - however the distribution works with Node 6 and it's compiled for distribution.
 
 > **Please note the APIs and commands are likely to change quite a bit**
 
 ## Concept
+
+This is an early concept for a tool that reads a `.npmlint.json` file in a directory and from this can parse a `package.json` file and enforce these rules.
 
 The concept on this tool is to enforce rules across many repositories within your organisation. By putting a `.npmlint.json` file in your root directory and running `npm-lint` the tool will check the file to ensure it meets your configuration.
 
