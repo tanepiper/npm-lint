@@ -24,6 +24,14 @@ const finalResults = new loki('npm-lint.json');
 
 const dataObj = {
   argv: argv,
+  ruleSources: {
+    properties: require('./../rules/properties'),
+    scripts: require('./../rules/scripts'),
+    dependencies: require('./../rules/dependencies')
+  },
+  scanSources: {
+    dependency_version_check: require('../scans/dependency_version_check')
+  },
   workingDirectory: process.cwd(),
   important: finalResults.addCollection('important', {
     disableChangesApi: false
@@ -63,9 +71,6 @@ dataObj.important.insert({
 
 const createContext = require('./lib/create-context');
 
-const loadRule = require('./lib/load-rule');
-const loadScan = require('./lib/load-scan');
-
 const init = async function init() {
   let context;
   try {
@@ -75,17 +80,12 @@ const init = async function init() {
     process.exit(1);
   }
 
-  const allRules = {};
-  Object.keys(context.rules).forEach(key => {
-    allRules[key] = loadRule(key, __dirname);
-  });
-
   context.info.insert({
-    message: `Using Rules: `.bold + `${Object.keys(allRules).join(', ')}`
+    message: `Using Rules: `.bold + `${Object.keys(context.ruleSources).join(', ')}`
   });
 
-  await Object.keys(allRules).forEach(async ruleKey => {
-    const rules = allRules[ruleKey];
+  await Object.keys(context.ruleSources).forEach(async ruleKey => {
+    const rules = context.ruleSources[ruleKey];
     context.info.insert({ message: `Running ${rules.name}` });
     let results;
     try {
@@ -112,7 +112,7 @@ init().then(async context => {
     context.important.insert({
       message: `Doing dependency version check`.green
     });
-    const scanner = loadScan('dependency_version_check', __dirname);
+    const scanner = require('./../scans/dependency_version_check');
 
     let upgrades;
     try {

@@ -25,10 +25,15 @@ module.exports = {
   externals: nodeModules,
   plugins: [
     new CleanWebpackPlugin('./bin'),
-    new webpack.BannerPlugin({ banner: 'require("source-map-support").install();',
+    new webpack.BannerPlugin({
+      banner: 'require("source-map-support").install();',
       raw: true,
       entryOnly: false
     }),
-    new webpack.BannerPlugin({ banner: '#!/usr/bin/env node', raw: true })
+    new webpack.BannerPlugin({
+      banner: '#!/usr/bin/env node',
+      raw: true,
+      entryOnly: false
+    })
   ]
 };
