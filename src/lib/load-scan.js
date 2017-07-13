@@ -1,11 +1,9 @@
-const fs = require('fs');
-const {promisify} = require('util');
-const readDirAsync = promisify(fs.readdir);
+const path = require('path');
 
 module.exports = (key, basedir) => {
     let scanFile;
     try {
-        scanFile = require(`${basedir}/scans/${key}.js`);
+        scanFile = require(`../../scans/${key}.js`);
     } catch (e) {
         return console.error(`Cannot load scanner ${key}.js in ${basedir}/scans`);
     }

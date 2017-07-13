@@ -6,7 +6,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "description": "A configurable package.json linter with a focus on security",
-  "main": "src/index.js",
+  "main": "bin/index.js",
   "scripts": {
     "lint": "node src/index.js",
     "test": "ava",
@@ -18,8 +18,9 @@
     "npm-lint": "bin/index.js"
   },
   "files": [
-    "src/**/*",
+    "bin/**/*",
     "rules/**/*",
+    "scans/**/*",
     "default/",
     "package-lock.json",
     "README.md"
@@ -29,9 +30,7 @@
       "test/**/*-spec.js"
     ],
     "source": [
-      "rules/**/*.js",
-      "scans/**/*.js",
-      "lib/**/*.js"
+      "src/**/*.js"
     ]
   },
   "repository": {
@@ -44,8 +43,6 @@
     "cli-table": "^0.3.1",
     "colors": "^1.1.2",
     "eslint": "^4.2.0",
-    "find-up": "^2.1.0",
-    "loki": "^0.3.8",
     "lokijs": "^1.5.0",
     "npm": "^5.2.0",
     "npm-check-updates": "^2.12.1",

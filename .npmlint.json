@@ -16,7 +16,8 @@
       "allow": ["node", "npm", "ava", "webpack"]
     },
     "dependencies": {
-      "checkLatest": false
+      "checkLatest": true,
+      "sources": ["https://github.com"]
     }
   }
 }
