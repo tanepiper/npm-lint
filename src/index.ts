@@ -1,3 +1,20 @@
+type ContextObject = {
+    package: object;
+    options: object;
+    rules: object;
+    npmLintFile: string;
+    argv: object;
+    errors: {
+        insert: Function;
+    };
+    warnings: {
+        insert: Function;
+    };
+    info: {
+        insert: Function;
+    };
+};
+
 let exitCode = 0;
 
 process.on('unhandledRejection', function(err) {
@@ -35,16 +52,18 @@ const dataObj = {
         disableChangesApi: false
     }),
     errors: finalResults.addCollection('errors', { disableChangesApi: false }),
-    warnings: finalResults.addCollection('warnings', { disableChangesApi: false })
+    warnings: finalResults.addCollection('warnings', {
+        disableChangesApi: false
+    })
 };
 
 if (argv.debug) {
-    dataObj.info.on('insert', result => {
+    dataObj.info.on('insert', (result: Error) => {
         console.info(`Info: ${result.message}`.gray);
     });
 }
 
-dataObj.errors.on('insert', result => {
+dataObj.errors.on('insert', (result: Error) => {
     // On the first error we always trigger a change in exit code
     if (!exitCode) {
         exitCode = 1;
@@ -52,11 +71,11 @@ dataObj.errors.on('insert', result => {
     console.error(`Error: ${result.message}`.red);
 });
 
-dataObj.warnings.on('insert', result => {
+dataObj.warnings.on('insert', (result: Error) => {
     console.info(`Warning: ${result.message}`.yellow);
 });
 
-dataObj.important.on('insert', result => {
+dataObj.important.on('insert', (result: Error) => {
     console.info(`${result.message}`.cyan);
 });
 
@@ -76,12 +95,13 @@ const init = async function init() {
     }
 
     context.info.insert({
-        message: `Using Rules: `.bold + `${Object.keys(context.rules).join(', ')}`
+        message:
+            `Using Rules: `.bold + `${Object.keys(context.rules).join(', ')}`
     });
     return context;
 };
 
-const run = async function run(context) {
+const run = async function run(context: ContextObject) {
     await Object.keys(context.rules).forEach(async ruleKey => {
         let rules;
         try {
@@ -105,7 +125,10 @@ init().then(async context => {
     run(context).then(async () => {
         const table = new Table();
 
-        table.push({ 'Total Errors': context.errors.count() }, { 'Total Warnings': context.warnings.count() });
+        table.push(
+            { 'Total Errors': context.errors.count() },
+            { 'Total Warnings': context.warnings.count() }
+        );
 
         console.log(table.toString());
 
@@ -115,37 +138,49 @@ init().then(async context => {
             });
             const scanner = require('./../scans/dependency_version_check');
 
-            let upgrades;
             try {
-                upgrades = await scanner.processor(context);
+                let upgrades = await scanner.processor(context);
+                if (
+                    upgrades.upgrades &&
+                    Object.keys(upgrades.upgrades).length > 0
+                ) {
+                    const table = new Table({
+                        head: [
+                            'Package',
+                            'Type',
+                            'Package Version',
+                            'Latest Version'
+                        ],
+                        colWidths: [40, 30, 30, 30]
+                    });
+                    Object.keys(upgrades.upgrades).forEach(upgrade => {
+                        let dep;
+                        let type = 'dependency';
+                        if (context.package.dependencies[upgrade]) {
+                            dep = context.package.dependencies[upgrade];
+                        } else if (context.package.devDependencies[upgrade]) {
+                            dep = context.package.devDependencies[upgrade];
+                            type = 'devDependency';
+                        }
+
+                        table.push([
+                            upgrade,
+                            type,
+                            dep,
+                            upgrades.upgrades[upgrade]
+                        ]);
+                    });
+                    context.important.insert({
+                        message: `Available Dependency Updates`.underline.cyan
+                    });
+                    console.log(table.toString());
+                } else {
+                    context.important.insert({
+                        message: `All dependencies are up to date`.green
+                    });
+                }
             } catch (e) {
                 context.errors.insert({ message: e.message });
-            }
-            if (upgrades.upgrades && Object.keys(upgrades.upgrades).length > 0) {
-                const table = new Table({
-                    head: ['Package', 'Type', 'Package Version', 'Latest Version'],
-                    colWidths: [40, 30, 30, 30]
-                });
-                Object.keys(upgrades.upgrades).forEach(upgrade => {
-                    let dep;
-                    let type = 'dependency';
-                    if (context.package.dependencies[upgrade]) {
-                        dep = context.package.dependencies[upgrade];
-                    } else if (context.package.devDependencies[upgrade]) {
-                        dep = context.package.devDependencies[upgrade];
-                        type = 'devDependency';
-                    }
-
-                    table.push([upgrade, type, dep, upgrades.upgrades[upgrade]]);
-                });
-                context.important.insert({
-                    message: `Available Dependency Updates`.underline.cyan
-                });
-                console.log(table.toString());
-            } else {
-                context.important.insert({
-                    message: `All dependencies are up to date`.green
-                });
             }
         }
 

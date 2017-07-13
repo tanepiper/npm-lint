@@ -15,12 +15,16 @@ fs
   });
 
 module.exports = {
-  entry: ['babel-polyfill', './src/index.js'],
+  name: 'npm-lint',
+  entry: ['babel-polyfill', './src/index.ts'],
   target: 'node',
   devtool: 'sourcemap',
   output: {
     path: path.join(__dirname, 'bin'),
     filename: 'index.js'
+  },
+  resolve: {
+    extensions: ['.ts', '.js']
   },
   externals: nodeModules,
   plugins: [
@@ -49,6 +53,10 @@ module.exports = {
       test: /\.js?$/,
       exclude: /(node_modules)/,
       loader: 'babel-loader'
+    }, {
+      test: /\.ts?$/,
+      exclude: /(node_modules)/,
+      loader: 'ts-loader'
     }]
   }
 };
