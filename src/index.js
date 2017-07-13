@@ -1,17 +1,17 @@
 let exitCode = 0;
 
 process.on('unhandledRejection', function(err) {
-  /*eslint-disable */
-  console.log(err.stack);
-  process.exit(1);
-  /*eslint-enable */
+    /*eslint-disable */
+    console.log(err.stack);
+    process.exit(1);
+    /*eslint-enable */
 });
 
 process.on('uncaughtException', function(exception) {
-  /*eslint-disable */
-  console.log(exception); // to see your exception details in the console
-  process.exit(1);
-  /*eslint-enable */
+    /*eslint-disable */
+    console.log(exception); // to see your exception details in the console
+    process.exit(1);
+    /*eslint-enable */
 });
 
 require('colors');
@@ -23,136 +23,138 @@ const Table = require('cli-table');
 const finalResults = new loki('npm-lint.json');
 
 const dataObj = {
-  argv: argv,
-  ruleSources: {
-    properties: require('./../rules/properties'),
-    scripts: require('./../rules/scripts'),
-    dependencies: require('./../rules/dependencies')
-  },
-  scanSources: {
-    dependency_version_check: require('../scans/dependency_version_check')
-  },
-  workingDirectory: process.cwd(),
-  important: finalResults.addCollection('important', {
-    disableChangesApi: false
-  }),
-  info: finalResults.addCollection('info', {
-    disableChangesApi: false
-  }),
-  errors: finalResults.addCollection('errors', { disableChangesApi: false }),
-  warnings: finalResults.addCollection('warnings', { disableChangesApi: false })
+    argv: argv,
+    scanSources: {
+        dependency_version_check: require('../scans/dependency_version_check')
+    },
+    workingDirectory: process.cwd(),
+    important: finalResults.addCollection('important', {
+        disableChangesApi: false
+    }),
+    info: finalResults.addCollection('info', {
+        disableChangesApi: false
+    }),
+    errors: finalResults.addCollection('errors', { disableChangesApi: false }),
+    warnings: finalResults.addCollection('warnings', { disableChangesApi: false })
 };
 
 if (argv.debug) {
-  dataObj.info.on('insert', result => {
-    console.info(`Info: ${result.message}`.gray);
-  });
+    dataObj.info.on('insert', result => {
+        console.info(`Info: ${result.message}`.gray);
+    });
 }
 
 dataObj.errors.on('insert', result => {
-  // On the first error we always trigger a change in exit code
-  if (!exitCode) {
-    exitCode = 1;
-  }
-  console.error(`Error: ${result.message}`.red);
+    // On the first error we always trigger a change in exit code
+    if (!exitCode) {
+        exitCode = 1;
+    }
+    console.error(`Error: ${result.message}`.red);
 });
 
 dataObj.warnings.on('insert', result => {
-  console.info(`Warning: ${result.message}`.yellow);
+    console.info(`Warning: ${result.message}`.yellow);
 });
 
 dataObj.important.on('insert', result => {
-  console.info(`${result.message}`.cyan);
+    console.info(`${result.message}`.cyan);
 });
 
 dataObj.important.insert({
-  message: `${`Running npm-linter`.green}`.underline.bgBlue
+    message: `${`Running npm-linter`.green}`.underline.bgBlue
 });
 
 const createContext = require('./lib/create-context');
 
 const init = async function init() {
-  let context;
-  try {
-    context = await createContext(dataObj);
-  } catch (e) {
-    dataObj.errors.insert({ message: e.message });
-    process.exit(1);
-  }
-
-  context.info.insert({
-    message: `Using Rules: `.bold + `${Object.keys(context.ruleSources).join(', ')}`
-  });
-
-  await Object.keys(context.ruleSources).forEach(async ruleKey => {
-    const rules = context.ruleSources[ruleKey];
-    context.info.insert({ message: `Running ${rules.name}` });
-    let results;
+    let context;
     try {
-      await rules.processor(context);
+        context = await createContext(dataObj);
     } catch (e) {
-      context.errors.insert({ message: e.message });
+        dataObj.errors.insert({ message: e.message });
+        process.exit(1);
     }
-  });
 
-  return context;
+    context.info.insert({
+        message: `Using Rules: `.bold + `${Object.keys(context.rules).join(', ')}`
+    });
+    return context;
+};
+
+const run = async function run(context) {
+    await Object.keys(context.rules).forEach(async ruleKey => {
+        let rules;
+        try {
+            rules = require(`./../rules/${ruleKey}.js`);
+        } catch (e) {
+            context.errors.insert({ message: e.message });
+        }
+        if (!rules) {
+            return;
+        }
+        context.info.insert({ message: `Running ${rules.name}` });
+        try {
+            await rules.processor(context);
+        } catch (e) {
+            context.errors.insert({ message: e.message });
+        }
+    });
 };
 
 init().then(async context => {
-  const table = new Table();
+    run(context).then(async () => {
+        const table = new Table();
 
-  table.push(
-    { 'Total Errors': context.errors.count() },
-    { 'Total Warnings': context.warnings.count() }
-  );
+        table.push({ 'Total Errors': context.errors.count() }, { 'Total Warnings': context.warnings.count() });
 
-  console.log(table.toString());
+        console.log(table.toString());
 
-  if (context.rules.dependencies.checkLatest) {
-    context.important.insert({
-      message: `Doing dependency version check`.green
-    });
-    const scanner = require('./../scans/dependency_version_check');
+        if (context.rules.dependencies.checkLatest) {
+            context.important.insert({
+                message: `Doing dependency version check`.green
+            });
+            const scanner = require('./../scans/dependency_version_check');
 
-    let upgrades;
-    try {
-      upgrades = await scanner.processor(context);
-    } catch (e) {
-      context.errors.insert({ message: e.message });
-    }
-    if (upgrades.upgrades && Object.keys(upgrades.upgrades).length > 0) {
-      const table = new Table({
-        head: ['Package', 'Type', 'Package Version', 'Latest Version'],
-        colWidths: [40, 30, 30, 30]
-      });
-      Object.keys(upgrades.upgrades).forEach(upgrade => {
-        let dep;
-        let type = 'dependency';
-        if (context.package.dependencies[upgrade]) {
-          dep = context.package.dependencies[upgrade];
-        } else if (context.package.devDependencies[upgrade]) {
-          dep = context.package.devDependencies[upgrade];
-          type = 'devDependency';
+            let upgrades;
+            try {
+                upgrades = await scanner.processor(context);
+            } catch (e) {
+                context.errors.insert({ message: e.message });
+            }
+            if (upgrades.upgrades && Object.keys(upgrades.upgrades).length > 0) {
+                const table = new Table({
+                    head: ['Package', 'Type', 'Package Version', 'Latest Version'],
+                    colWidths: [40, 30, 30, 30]
+                });
+                Object.keys(upgrades.upgrades).forEach(upgrade => {
+                    let dep;
+                    let type = 'dependency';
+                    if (context.package.dependencies[upgrade]) {
+                        dep = context.package.dependencies[upgrade];
+                    } else if (context.package.devDependencies[upgrade]) {
+                        dep = context.package.devDependencies[upgrade];
+                        type = 'devDependency';
+                    }
+
+                    table.push([upgrade, type, dep, upgrades.upgrades[upgrade]]);
+                });
+                context.important.insert({
+                    message: `Available Dependency Updates`.underline.cyan
+                });
+                console.log(table.toString());
+            } else {
+                context.important.insert({
+                    message: `All dependencies are up to date`.green
+                });
+            }
         }
 
-        table.push([upgrade, type, dep, upgrades.upgrades[upgrade]]);
-      });
-      context.important.insert({
-        message: `Available Dependency Updates`.underline.cyan
-      });
-      console.log(table.toString());
-    } else {
-      context.important.insert({
-        message: `All dependencies are up to date`.green
-      });
-    }
-  }
+        if (!exitCode) {
+            context.important.insert({
+                message: 'npm-lint: No issues found'.green.bold
+            });
+        }
 
-  if (!exitCode) {
-    context.important.insert({
-      message: 'npm-lint: No issues found'.green.bold
+        process.exit(exitCode);
     });
-  }
-
-  process.exit(exitCode);
 });

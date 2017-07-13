@@ -25,6 +25,14 @@ module.exports = {
   externals: nodeModules,
   plugins: [
     new CleanWebpackPlugin('./bin'),
+    new webpack.ContextReplacementPlugin(
+      /\.\/\.\.\/rules\//,
+      `${__dirname}/rules/`
+    ),
+    new webpack.ContextReplacementPlugin(
+      /\.\/\.\.\/scans\//,
+      `${__dirname}/scans/`
+    ),
     new webpack.BannerPlugin({
       banner: 'require("source-map-support").install();',
       raw: true,
