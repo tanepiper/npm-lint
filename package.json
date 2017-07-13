@@ -1,25 +1,26 @@
 {
   "name": "npm-lint",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "preferGlobal": true,
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
   "description": "A configurable package.json linter with a focus on security",
-  "main": "src/index.js",
+  "main": "bin/index.js",
   "scripts": {
     "lint": "node src/index.js",
     "test": "ava",
     "build": "webpack",
-    "prepublishOnly": "npm run lint",
+    "prepublishOnly": "npm run lint && npm run build",
     "watch": "webpack --watch"
   },
   "bin": {
     "npm-lint": "bin/index.js"
   },
   "files": [
-    "src/**/*",
+    "bin/**/*",
     "rules/**/*",
+    "scans/**/*",
     "default/",
     "package-lock.json",
     "README.md"
