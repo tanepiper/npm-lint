@@ -6,23 +6,34 @@
     "registry": "https://registry.npmjs.org"
   },
   "description": "A configurable package.json linter with a focus on security",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "npm-lint": "node index.js"
+    "lint": "node src/index.js",
+    "test": "ava",
+    "build": "webpack",
+    "prepublishOnly": "npm run lint",
+    "watch": "webpack --watch"
   },
   "bin": {
-    "npm-lint": "./index.js"
+    "npm-lint": "bin/index.js"
   },
   "files": [
-    "lib/",
-    "rules/",
-    "scans/",
+    "src/**/*",
+    "rules/**/*",
     "default/",
-    "index.js",
     "package-lock.json",
     "README.md"
   ],
+  "ava": {
+    "files": [
+      "test/**/*-spec.js"
+    ],
+    "source": [
+      "rules/**/*.js",
+      "scans/**/*.js",
+      "lib/**/*.js"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/tanepiper/package-linter.git"
@@ -33,7 +44,19 @@
     "cli-table": "^0.3.1",
     "colors": "^1.1.2",
     "eslint": "^4.2.0",
+    "find-up": "^2.1.0",
+    "loki": "^0.3.8",
+    "lokijs": "^1.5.0",
+    "npm": "^5.2.0",
     "npm-check-updates": "^2.12.1",
-    "semver-regex": "^1.0.0"
-  }
+    "semver-regex": "^1.0.0",
+    "source-map-support": "^0.4.15"
+  },
+  "devDependencies": {
+    "ava": "^0.20.0",
+    "clean-webpack-plugin": "^0.1.16",
+    "nodemon": "^1.11.0",
+    "webpack": "^3.2.0"
+  },
+  "npmLint": {}
 }

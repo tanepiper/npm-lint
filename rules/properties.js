@@ -1,22 +1,23 @@
+const propertyName = require('./subrules/properties-name');
+const propertyVersion = require('./subrules/properties-version');
+
 module.exports = {
-    name: 'Property Rule',
-    key: 'properties',
-    processor: (context, propertiesRules) => {
-        return Promise.resolve({
-            name: module.exports.name,
-            key: module.exports.key,
-            errors: propertiesRules
-                .map(property => {
-                    if (!context.package[property]) {
-                        return {
-                            type: module.exports.name,
-                            key: module.exports.key,
-                            message: `package.json must property "${property}"`,
-                            level: 'error'
-                        };
-                    }
-                })
-                .filter(error => error)
+  name: 'Properties Rules',
+  description: 'Handles the checking of properties within a package.json file',
+  key: 'properties',
+  processor: async context => {
+    const rules = context.rules[module.exports.key];
+    rules.forEach(property => {
+      if (!context.package[property]) {
+        context.errors.insert({
+          message: `${'package.json'
+            .yellow} must have property "${property.yellow}"`
         });
-    }
+      }
+
+      if (property === 'name' || property === 'version') {
+        propertyName.processor(context);
+      }
+    });
+  }
 };

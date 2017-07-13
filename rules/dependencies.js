@@ -8,8 +8,21 @@ module.exports = {
      * @param {Object} package The package.json as a JSON object
      * @param {Object} The rules for this plugin
      */
-    processor: (context, rules) => {
-        return Promise.resolve({
+    processor: async (context, rules) => {
+        if (!context.package.dependencies) {
+            return {
+                name: module.exports.name,
+                key: module.exports.key,
+                errors: [{
+                    type: module.exports.name,
+                    key: module.exports.key,
+                    message: `package.json does not contain dependencies but .npmlint.json contains rules`,
+                    level: 'error'
+                }]
+            };
+        }
+
+        return {
             name: module.exports.name,
             key: module.exports.key,
             errors: Object.keys(context.package.dependencies || {}).map(dependency => {
@@ -53,6 +66,6 @@ module.exports = {
                 })
             )
             .filter(error => error)
-        });
+        };
     }
 };
