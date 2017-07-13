@@ -21,7 +21,7 @@ module.exports = async dataObj => {
     context.package = JSON.parse(pkg);
   } catch (e) {
     // If no package file it found we want to exit early
-    let error = new NoPackageFoundError(
+    let error = new Error(
       `No valid ${'package.json'.yellow} found at ${context.workingDirectory.yellow}`.bgRed.bold
     );
     throw error;
