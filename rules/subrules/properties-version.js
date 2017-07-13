@@ -8,7 +8,7 @@ module.exports = {
     const version = context.package.version;
     if (!semverRegex().test(version)) {
       context.errors.insert({
-        message: `package.json "version" property is not a valid semver`
+        message: `${'package.json'.yellow} "${'version'.blue}" property is not a valid semver ${version.red}`
       });
     }
   }

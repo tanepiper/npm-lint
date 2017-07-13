@@ -10,25 +10,25 @@ module.exports = {
 
     if (name.length > 214) {
       context.errors.insert({
-        message: `package.json "name" property cannot be longer than 214 characters`
+        message: `${'package.json'.yellow} "${'name'.blue}" property cannot be longer than 214 characters`
       });
     }
 
     if (name.charAt(0) === '.' || name.charAt(0) === '_') {
       context.errors.insert({
-        message: `package.json "name" property cannot start with a . (dot) or _ (underscore)`
+        message: `${'package.json'.yellow} "${'name'.blue}" property cannot start with a . (dot) or _ (underscore)`
       });
     }
 
     if (!name.match(nameValidCheck)) {
       context.errors.insert({
-        message: `package.json "name" property cannot contain non-URL-safe characters`
+        message: `${'package.json'.yellow} "${'name'.blue}" property cannot contain non-URL-safe characters`
       });
     }
 
     if (name.charAt(0) == name.charAt(0).toUpperCase()) {
       context.errors.insert({
-        message: `package.json "name" property cannot start with a capital letter`
+        message: `${'package.json'.yellow} "${'name'.blue}" property cannot start with a capital letter`
       });
     }
   }
