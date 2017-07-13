@@ -1,6 +1,6 @@
 {
   "name": "npm-lint",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "preferGlobal": true,
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
