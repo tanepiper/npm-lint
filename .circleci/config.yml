@@ -14,9 +14,9 @@ jobs:
       # - image: circleci/mongo:3.4.4
     steps:
       - checkout
-      - run:
-          name: update-npm
-          command: 'sudo npm install -g npm@latest'
+    #   - run:
+    #       name: update-npm
+    #       command: 'sudo npm install -g npm@latest'
       - restore_cache:
           key: npm-lint-dependencies-{{ checksum "package.json" }}
       - run: 
