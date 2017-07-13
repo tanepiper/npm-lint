@@ -11,7 +11,7 @@
     "lint": "node src/index.js",
     "test": "ava",
     "build": "webpack",
-    "prepublishOnly": "npm run lint",
+    "prepublishOnly": "npm run lint && npm run build",
     "watch": "webpack --watch"
   },
   "bin": {
