@@ -17,9 +17,13 @@
   "bin": {
     "npm-lint": "bin/index.js"
   },
+  "engines": {
+    "node": ">=v6.11.1"
+  },
   "files": [
     "bin/**/*",
     "package-lock.json",
+    ".npmlint.json",
     "README.md"
   ],
   "ava": {
@@ -37,8 +41,8 @@
   "author": "Tane Piper <piper.tane@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "babel-runtime": "^6.23.0",
     "babel-polyfill": "^6.23.0",
+    "babel-runtime": "^6.23.0",
     "cli-table": "^0.3.1",
     "colors": "^1.1.2",
     "eslint": "^4.2.0",
@@ -46,7 +50,8 @@
     "npm": "^5.2.0",
     "npm-check-updates": "^2.12.1",
     "semver-regex": "^1.0.0",
-    "source-map-support": "^0.4.15"
+    "source-map-support": "^0.4.15",
+    "util.promisify": "^1.0.0"
   },
   "devDependencies": {
     "ava": "^0.20.0",

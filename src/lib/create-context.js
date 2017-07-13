@@ -1,5 +1,8 @@
 const defaultNpmLint = require(`${__dirname}/../../default/.npmlint.json`);
-const { promisify } = require('util');
+
+// Allows us to support older node version
+const promisify = require('util.promisify');
+
 const fs = require('fs');
 const readFileAsync = promisify(fs.readFile);
 
