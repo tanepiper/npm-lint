@@ -6,7 +6,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "description": "A configurable package.json linter with a focus on security",
-  "main": "bin/index.js",
+  "main": "src/index.js",
   "scripts": {
     "lint": "node src/index.js",
     "test": "ava",
@@ -15,10 +15,10 @@
     "watch": "webpack --watch"
   },
   "bin": {
-    "npm-lint": "bin/index.js"
+    "npm-lint": "src/index.js"
   },
   "files": [
-    "bin/**/*",
+    "src/**/*",
     "rules/**/*",
     "scans/**/*",
     "default/",
