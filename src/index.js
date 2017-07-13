@@ -17,6 +17,7 @@ process.on('uncaughtException', function(exception) {
 require('colors');
 
 const loki = require('lokijs');
+const Table = require('cli-table');
 
 const finalResults = new loki('npm-lint.json');
 
@@ -32,6 +33,10 @@ dataObj.info.on('insert', result => {
 });
 
 dataObj.errors.on('insert', result => {
+  // On the first error we always trigger a change in exit code
+  if (!exitCode) {
+    exitCode = 1;
+  }
   console.error(`Error: ${result.message}`.red);
 });
 
@@ -43,10 +48,7 @@ dataObj.info.insert({
   message: `${`Running npm-linter`.green}`.underline.bgBlue
 });
 
-const Table = require('cli-table');
-
 const createContext = require('./lib/create-context');
-const NoPackageFoundError = require('./errors/no-package-json-error');
 
 const loadRule = require('./lib/load-rule');
 const loadScan = require('./lib/load-scan');
@@ -56,10 +58,8 @@ const init = async function init() {
   try {
     context = await createContext(dataObj);
   } catch (e) {
-    if (e instanceof NoPackageFoundError) {
-      return console.error('NoPackageFoundError', e.message);
-    }
-    throw e;
+    dataObj.errors.insert({ message: e.message });
+    process.exit(1);
   }
 
   const allRules = {};
@@ -71,35 +71,31 @@ const init = async function init() {
     message: `Using Rules: `.bold + `${Object.keys(allRules).join(', ')}`
   });
 
-  return await Object.keys(allRules).map(async ruleKey => {
+  await Object.keys(allRules).forEach(async ruleKey => {
     const rules = allRules[ruleKey];
+    context.info.insert({ message: `Running ${rules.name}` });
     let results;
     try {
-      results = await rules.processor(context, context.rules[key]);
+      await rules.processor(context);
     } catch (e) {
-      return e;
+      dataObj.errors.insert({ message: e.message });
     }
-
-    let { name, key, errors, warnings } = results;
-    return { key, rules, errors };
   });
+
+  return context;
 };
 
-init().then(async results => {
-  await results.forEach(async result => {
-    await result.then(info => {
-      console.log(
-        `${info.errors.name}`.blue.underline +
-          ` [Total issues: ${'' + info.errors.errors.length + ''.yellow}]`.bold
-      );
-      if (info.errors.errors.length > 0) {
-        exitCode = 1;
-      }
-      info.errors.errors.forEach(error => {
-        console.log(`${error.message}`.red);
-      });
-    });
+init().then(context => {
+  const table = new Table({
+    //colWidths: [40, 30]
   });
+
+  table.push(
+    {'Total Errors': context.errors.count()},
+    {'Total Warnings': context.warnings.count()},
+  );
+
+  console.log(table.toString());
 
   if (!exitCode) {
     console.log('npm-lint: No issues found'.green.bold);

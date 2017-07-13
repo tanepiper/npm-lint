@@ -6,19 +6,20 @@
     "registry": "https://registry.npmjs.org"
   },
   "description": "A configurable package.json linter with a focus on security",
-  "main": "bin/index.js",
+  "main": "src/index.js",
   "scripts": {
     "lint": "node src/index.js",
     "test": "ava",
     "build": "webpack",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run lint",
     "watch": "webpack --watch"
   },
   "bin": {
     "npm-lint": "bin/index.js"
   },
   "files": [
-    "bin/index.js",
+    "src/**/*",
+    "rules/**/*",
     "default/",
     "package-lock.json",
     "README.md"

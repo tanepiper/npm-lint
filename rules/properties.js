@@ -5,29 +5,19 @@ module.exports = {
   name: 'Properties Rules',
   description: 'Handles the checking of properties within a package.json file',
   key: 'properties',
-  processor: async (context, rules) => {
-
-    const newItem = Object.assign({}, this, {
-      errors: [],
-      warnings: []
-    });
-
+  processor: async context => {
+    const rules = context.rules[module.exports.key];
     rules.forEach(property => {
       if (!context.package[property]) {
-        newItem.errors.push(
-          `package.json must have property "${property.yellow}"`.red
-        );
+        context.errors.insert({
+          message: `${'package.json'
+            .yellow} must have property "${property.yellow}"`
+        });
       }
 
-      if (property === 'name') {
-        propertyName.processor(newItem, context.package.name);
-      }
-
-      if (property === 'version') {
-        propertyVersion.processor(newItem, context.package.version);
+      if (property === 'name' || property === 'version') {
+        propertyName.processor(context);
       }
     });
-
-    return newItem;
   }
 };
