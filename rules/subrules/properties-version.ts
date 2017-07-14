@@ -1,4 +1,4 @@
-import semverRegex from 'semver-regex';
+import * as semverRegex from 'semver-regex';
 
 module.exports = {
   name: 'Property Name Rule',

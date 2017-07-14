@@ -32,7 +32,7 @@ jobs:
     #       command: npm test
       - run: 
           name: do-build
-          command: npm run-build
+          command: npm run build
       - run:
           name: do-pack
           command: npm pack
