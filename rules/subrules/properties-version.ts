@@ -1,9 +1,9 @@
-const semverRegex = require('semver-regex');
+import semverRegex from 'semver-regex';
 
 module.exports = {
   name: 'Property Name Rule',
   key: 'properties.version',
-  processor: context => {
+  processor: (context:any) => {
     // Rules as per https://docs.npmjs.com/files/package.json#version
     const version = context.package.version;
     if (!semverRegex().test(version)) {

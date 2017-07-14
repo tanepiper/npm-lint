@@ -29,9 +29,6 @@ const dataObj = {
     constants,
     types,
     argv: argv,
-    scanSources: {
-        dependency_version_check: require('../scans/dependency_version_check')
-    },
     workingDirectory: process.cwd(),
     important: finalResults.addCollection('important', {
         disableChangesApi: false
@@ -93,7 +90,7 @@ const run = async function run(context: types.ContextObject) {
     await Object.keys(context.rules).forEach(async ruleKey => {
         let rules;
         try {
-            rules = require(`./../rules/${ruleKey}.js`);
+            rules = require(`./../rules/${ruleKey}`);
         } catch (e) {
             context.errors.insert({ message: e.message });
         }

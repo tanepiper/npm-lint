@@ -1,7 +1,7 @@
 module.exports = {
   name: 'Script rule',
   key: 'scripts',
-  processor: async context => {
+  processor: async (context:any) => {
     if (!context.package.scripts) {
       context.warnings.insert({
         message: `${'package.json'
@@ -17,10 +17,10 @@ module.exports = {
       // Find all executables called in this script
       const exeFiles = script
         .split('&&')
-        .map(item => item.trim().split(' '))
-        .map(item => item[0]);
+        .map((item:string) => item.trim().split(' '))
+        .map((items:Array<string>) => items[0]);
 
-      return exeFiles.forEach(exeFile => {
+      return exeFiles.forEach((exeFile: string) => {
         if (!context.rules.scripts.allow.includes(exeFile)) {
           context.errors.insert({
             message: `${'package.json'

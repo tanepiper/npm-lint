@@ -3,7 +3,7 @@ const ncu = require('npm-check-updates');
 module.exports = {
     name: 'Dependency Version Check',
     key: 'dependency_version_check',
-    processor: async context => {
+    processor: async (context:any) => {
         let allPackages = context.package.dependencies && Object.keys(context.package.dependencies);
         if (context.package.devDependencies) {
             allPackages = allPackages.concat(Object.keys(context.package.devDependencies));
@@ -18,7 +18,7 @@ module.exports = {
                     silent: true,
                     jsonUpgraded: true
                 })
-                .then(upgrades => {
+                .then((upgrades:any) => {
                     return {
                         upgrades,
                         totalUpgrades: (upgrades && Object.keys(upgrades).length) || 0

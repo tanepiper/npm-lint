@@ -5,9 +5,9 @@ module.exports = {
   name: 'Properties Rules',
   description: 'Handles the checking of properties within a package.json file',
   key: 'properties',
-  processor: async context => {
+  processor: async (context:any) => {
     const rules = context.rules[module.exports.key];
-    rules.forEach(property => {
+    rules.forEach((property:string) => {
       if (!context.package[property]) {
         context.errors.insert({
           message: `${'package.json'

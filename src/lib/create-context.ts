@@ -6,9 +6,7 @@ const promisify = require('util.promisify');
 const fs = require('fs');
 const readFileAsync = promisify(fs.readFile);
 
-
-
-module.exports = async dataObj => {
+module.exports = async (dataObj:any):Promise<object> => {
   const context = Object.assign(
     {
       packageFile: `${dataObj.workingDirectory}/package.json`,

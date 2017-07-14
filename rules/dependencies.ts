@@ -8,7 +8,7 @@ module.exports = {
      * @param {Object} package The package.json as a JSON object
      * @param {Object} The rules for this plugin
      */
-  processor: async context => {
+  processor: async (context:any) => {
     const rules = context.rules[module.exports.key];
     if (!context.package.dependencies) {
       context.warnings.insert({
@@ -42,7 +42,7 @@ module.exports = {
           return;
       }
 
-      const checkInAllowedList = rules.sources.find(rule =>
+      const checkInAllowedList = rules.sources.find((rule: string) =>
         semverOrPath.includes(rule)
       );
       if (!checkInAllowedList) {
