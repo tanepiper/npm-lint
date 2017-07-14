@@ -1,21 +1,19 @@
 const defaultNpmLint = require(`${__dirname}/../../default/.npmlint.json`);
 
 // Allows us to support older node version
-const promisify = require('util.promisify');
+import promisify = require('util.promisify');
 
-const fs = require('fs');
+import fs = require('fs');
 const readFileAsync = promisify(fs.readFile);
 
-module.exports = async (dataObj:any):Promise<object> => {
-  const context = Object.assign(
-    {
+module.exports = async (dataObj: any): Promise<object> => {
+  const context = {
       packageFile: `${dataObj.workingDirectory}/package.json`,
       npmLintFile: '',
       options: {},
-      rules: {}
-    },
-    dataObj
-  );
+      rules: {},
+      ...dataObj
+  };
 
   // First we try load the package.json where this command has been run
   let pkg;
@@ -24,7 +22,7 @@ module.exports = async (dataObj:any):Promise<object> => {
     context.package = JSON.parse(pkg);
   } catch (e) {
     // If no package file it found we want to exit early
-    let error = new Error(
+    const error = new Error(
       `No valid ${'package.json'.yellow} found at ${context.workingDirectory.yellow}`.bgRed.bold
     );
     throw error;
@@ -46,7 +44,7 @@ module.exports = async (dataObj:any):Promise<object> => {
   // Now we try read the local .npmlint.json which overides all settings
   try {
     npmLint = await readFileAsync(`${dataObj.workingDirectory}/.npmlint.json`);
-    let result = JSON.parse(npmLint);
+    const result = JSON.parse(npmLint);
     if (result) {
       context.options = result.options || {};
       context.rules = result.rules || {};

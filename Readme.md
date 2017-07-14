@@ -7,7 +7,7 @@ A opinionated, but configurable linter for npm &amp; node package.json files wit
 
 `npm i -g npm-lint`
 
-`npm-lint` is build using Node 8 as it uses `async/await` - however the distribution works with Node 6 and it's compiled for distribution.
+`npm-lint` is build using Node 8 as it uses `async/await` - however the distribution is compiled and has been tested with Node 4 and Node 6.
 
 > **Please note the APIs and commands are likely to change quite a bit**
 
