@@ -8,7 +8,7 @@
   "description": "A configurable package.json linter with a focus on security",
   "main": "bin/index.js",
   "scripts": {
-    "lint": "node src/index.js",
+    "lint": "ts-node src/index.ts",
     "test": "webpack && ava",
     "build": "webpack",
     "prepublishOnly": "npm run lint && npm run build",
@@ -70,6 +70,7 @@
     "nodemon": "^1.11.0",
     "sinon": "^2.3.8",
     "ts-loader": "^2.2.2",
+    "ts-node": "^3.2.0",
     "typescript": "^2.4.1",
     "webpack": "^3.2.0",
     "webpack-node-externals": "^1.6.0"

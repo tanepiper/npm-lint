@@ -2,7 +2,7 @@
     "rules": {
         "properties": ["description", "main", "author", "license", "publishConfig", "main", "bin", "files", "ava", "repository"],
         "scripts": {
-            "allow": ["node", "npm", "ava", "webpack"]
+            "allow": ["node", "npm", "ava", "webpack", "ts-node"]
         },
         "dependencies": {
             "checkLatest": true,
