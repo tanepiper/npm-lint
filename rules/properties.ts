@@ -8,6 +8,9 @@ export default {
     key: 'properties',
     processor: async (context: any) => {
         const rules = context.rules[module.exports.key];
+        if (!rules || rules && rules.length === 0) {
+            return;
+        }
         rules.forEach((property: string) => {
             if (!context.package[property]) {
                 context.errors.insert({

@@ -1,19 +1,19 @@
 import * as constants from './constants';
 import * as types from './types';
 
-let exitCode = 0;
+let exitCode = constants.ExitCodes.OK;
 
 process.on('unhandledRejection', (err: Error) => {
     /*tslint:disable */
     console.log(err.stack);
-    process.exit(1);
+    process.exit(constants.ExitCodes.ERROR);
     /*tslint:enable */
 });
 
 process.on('uncaughtException', (exception: Error) => {
     /*tslint:disable */
     console.log(exception.stack); // to see your exception details in the console
-    process.exit(1);
+    process.exit(constants.ExitCodes.ERROR);
     /*tslint:enable */
 });
 
@@ -30,9 +30,6 @@ import createContext from './lib/create-context';
 const finalResults = new loki('npm-lint.json');
 
 const dataObj = {
-    constants,
-    types,
-    argv,
     workingDirectory: process.cwd(),
     important: finalResults.addCollection('important', {
         disableChangesApi: false
@@ -55,7 +52,7 @@ if (argv.debug) {
 dataObj.errors.on('insert', (result: Error) => {
     // On the first error we always trigger a change in exit code
     if (!exitCode) {
-        exitCode = 1;
+        exitCode = constants.ExitCodes.ERROR;
     }
     winston.error(`${result.message}`.red);
 });
@@ -107,13 +104,15 @@ const run = async (context: types.IContextObject) => {
     });
 };
 
-init().then(async (context) => {
+init().then(async (context: any) => {
     run(context).then(async () => {
         const table = new Table();
 
         table.push({ 'Total Errors': context.errors.count() }, { 'Total Warnings': context.warnings.count() });
 
-        winston.log(table.toString());
+        /*tslint:disable */
+        console.log(table.toString());
+        /*tslint:enable */
 
         if (context.rules.dependencies.checkLatest) {
             context.important.insert({
@@ -124,27 +123,24 @@ init().then(async (context) => {
             let upgrades;
             try {
                 upgrades = await scanner.processor(context);
-                if (upgrades.upgrades && Object.keys(upgrades.upgrades).length > 0) {
+                if (upgrades.totalDependencies + upgrades.totalDevDependencies > 0) {
                     const dependencyTable = new Table({
                         head: ['Package', 'Type', 'Package Version', 'Latest Version'],
-                        colWidths: [40, 30, 30, 30]
+                        colWidths: [30, 18, 18, 18]
                     });
-                    Object.keys(upgrades.upgrades).forEach((upgrade) => {
-                        let dep;
-                        let type = 'dependency';
-                        if (context.package.dependencies[upgrade]) {
-                            dep = context.package.dependencies[upgrade];
-                        } else if (context.package.devDependencies[upgrade]) {
-                            dep = context.package.devDependencies[upgrade];
-                            type = 'devDependency';
-                        }
 
-                        dependencyTable.push([upgrade, type, dep, upgrades.upgrades[upgrade]]);
+                    upgrades.results.dependencies.forEach((dependency: {package; type; currentVersion; upgrade}) => {
+                        dependencyTable.push([dependency.package, dependency.type, dependency.currentVersion, dependency.upgrade]);
+                    });
+                    upgrades.results.devDependencies.forEach((dependency: {package; type; currentVersion; upgrade}) => {
+                        dependencyTable.push([dependency.package, dependency.type, dependency.currentVersion, dependency.upgrade]);
                     });
                     context.important.insert({
                         message: `Available Dependency Updates`.underline.cyan
                     });
-                    winston.log(table.toString());
+                    /*tslint:disable */
+                    console.log(dependencyTable.toString());
+                    /*tslint:enable */
                 } else {
                     context.important.insert({
                         message: `All dependencies are up to date`.green
@@ -155,12 +151,12 @@ init().then(async (context) => {
             }
         }
 
+        // We've reached the end!
         if (!exitCode) {
             context.important.insert({
                 message: 'npm-lint: No issues found'.green.bold
             });
         }
-
         process.exit(exitCode);
     });
 });
