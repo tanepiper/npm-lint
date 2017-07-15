@@ -3,12 +3,14 @@ export interface IContextObject {
         name: string;
         version: string;
         scripts: string;
+        dependencies: object;
+        devDependencies: object;
     };
     options: object;
     rules: {
         scripts: {
-            allow: string[]
-        }
+            allow: string[];
+        };
     };
     npmLintFile: string;
     argv: object;

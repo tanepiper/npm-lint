@@ -1,15 +1,16 @@
 import * as ncu from 'npm-check-updates';
+import * as types from '../src/types';
 
 module.exports = {
     name: 'Dependency Version Check',
     key: 'dependency_version_check',
-    processor: async (context: any) => {
-        let allPackages = context.package.dependencies && Object.keys(context.package.dependencies);
+    processor: async (context: types.IContextObject) => {
+        let allPackages: string[] = context.package.dependencies && Object.keys(context.package.dependencies || {});
         if (context.package.devDependencies) {
-            allPackages = allPackages.concat(Object.keys(context.package.devDependencies));
+            allPackages = allPackages.concat(Object.keys(context.package.devDependencies || {}));
         }
 
-        let result;
+        let result: { upgrades; totalUpgrades };
         try {
             result = await ncu
                 .run({
@@ -24,9 +25,9 @@ module.exports = {
                         totalUpgrades: (upgrades && Object.keys(upgrades).length) || 0
                     };
                 });
+            return result;
         } catch (e) {
             context.errors.insert({ message: e.message });
         }
-        return result;
     }
 };

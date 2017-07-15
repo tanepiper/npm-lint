@@ -1,4 +1,7 @@
 import * as semver from 'semver';
+import * as types from '../src/types';
+
+import getValidSemver from '../src/lib/get-valid-semver';
 
 export default {
     name: 'Dependency Rule',
@@ -8,7 +11,7 @@ export default {
      * @param {Object} package The package.json as a JSON object
      * @param {Object} The rules for this plugin
      */
-    processor: (context: any) => {
+    processor: (context: types.IContextObject) => {
         const rules: { allowLatest: boolean; checkLatest: boolean; sources: string[] } = context.rules[module.exports.key] || {};
         if (!context.package.dependencies) {
             context.warnings.insert({
@@ -38,8 +41,9 @@ export default {
             const semverOrPath: string = allValues[valueIndex];
 
             // Check we have a semver range, and grab the package version value
-            const isSemver: RegExpMatchArray | null = semverOrPath.match(/^[\^|\~](\d+\.\d+\.\d+)$/);
-            if (isSemver && semver.valid(isSemver[1])) {
+            // Regexp from https://github.com/sindresorhus/semver-regex
+            const validSemver: string | null = getValidSemver(semverOrPath);
+            if (validSemver && semver.valid(validSemver)) {
                 return;
             }
 
