@@ -23,64 +23,67 @@ import { argv } from 'yargs';
 
 import * as loki from 'lokijs';
 import * as Table from 'cli-table';
-import * as winston from 'winston';
-
 import createContext from './lib/create-context';
 
 const finalResults = new loki('npm-lint.json');
 
-const dataObj = {
-    workingDirectory: process.cwd(),
-    important: finalResults.addCollection('important', {
-        disableChangesApi: false
-    }),
-    info: finalResults.addCollection('info', {
-        disableChangesApi: false
-    }),
-    errors: finalResults.addCollection('errors', { disableChangesApi: false }),
-    warnings: finalResults.addCollection('warnings', {
-        disableChangesApi: false
-    })
-};
+const init = async (): Promise<types.IContextObject> => {
+    let context: types.IContextObject = {
+        workingDirectory: process.cwd(),
+        important: finalResults.addCollection('important', {
+            disableChangesApi: false
+        }),
+        info: finalResults.addCollection('info', {
+            disableChangesApi: false
+        }),
+        errors: finalResults.addCollection('errors', { disableChangesApi: false }),
+        warnings: finalResults.addCollection('warnings', {
+            disableChangesApi: false
+        })
+    };
 
-if (argv.debug) {
-    dataObj.info.on('insert', (result: Error) => {
-        winston.info(`Info: ${result.message}`.gray);
-    });
-}
-
-dataObj.errors.on('insert', (result: Error) => {
-    // On the first error we always trigger a change in exit code
-    if (!exitCode) {
-        exitCode = constants.ExitCodes.ERROR;
+    if (argv.debug) {
+        context.info.on('insert', (result: Error) => {
+            /*tslint:disable */
+            console.log(`Info: ${result.message}`.gray);
+            /*tslint:enable */
+        });
     }
-    winston.error(`${result.message}`.red);
-});
 
-dataObj.warnings.on('insert', (result: Error) => {
-    winston.warn(`Warning: ${result.message}`.yellow);
-});
+    context.errors.on('insert', (result: Error) => {
+        // On the first error we always trigger a change in exit code
+        if (!exitCode) {
+            exitCode = constants.ExitCodes.ERROR;
+        }
+        /*tslint:disable */
+        console.log(`Error: ${result.message}`.red);
+        /*tslint:enable */
+    });
 
-dataObj.important.on('insert', (result: Error) => {
-    winston.info(`${result.message}`.cyan);
-});
+    context.warnings.on('insert', (result: Error) => {
+        /*tslint:disable */
+        console.log(`Warning: ${result.message}`.yellow);
+        /*tslint:enable */
+    });
 
-dataObj.important.insert({
-    message: `${`Running npm-linter`.green}`.underline.bgBlue
-});
+    context.important.on('insert', (result: Error) => {
+        /*tslint:disable */
+        console.log(`${result.message}`.cyan);
+        /*tslint:enable */
+    });
 
-const init = async () => {
-    let context;
+    context.important.insert({
+        message: `${`Running npm-linter`.green}`.underline.bgBlue
+    });
     try {
-        context = await createContext(dataObj);
+        context = await createContext(context);
+        context.info.insert({
+            message: `Using Rules: `.bold + `${Object.keys(context.rules).join(', ')}`
+        });
     } catch (e) {
-        dataObj.errors.insert({ message: e.message });
-        process.exit(1);
+        context.errors.insert({ message: e.message });
+        process.exit(constants.ExitCodes.ERROR);
     }
-
-    context.info.insert({
-        message: `Using Rules: `.bold + `${Object.keys(context.rules).join(', ')}`
-    });
     return context;
 };
 
@@ -89,15 +92,15 @@ const run = async (context: types.IContextObject) => {
         let rules;
         try {
             rules = require(`./../rules/${ruleKey}`).default;
-        } catch (e) {
-            context.errors.insert({ message: e.message });
-        }
-        if (!rules) {
-            return;
-        }
-        context.info.insert({ message: `Running ${rules.name}` });
-        try {
-            await rules.processor(context);
+            if (!rules) {
+                return;
+            }
+            context.info.insert({ message: `Running ${rules.name}` });
+            try {
+                await rules.processor(context);
+            } catch (e) {
+                context.errors.insert({ message: e.message });
+            }
         } catch (e) {
             context.errors.insert({ message: e.message });
         }
@@ -114,38 +117,14 @@ init().then(async (context: any) => {
         console.log(table.toString());
         /*tslint:enable */
 
-        if (context.rules.dependencies.checkLatest) {
+        if (context.rules.dependencies && context.rules.dependencies.checkLatest) {
             context.important.insert({
                 message: `Doing dependency version check`.green
             });
             const scanner = require('./../scans/dependency_version_check');
 
-            let upgrades;
             try {
-                upgrades = await scanner.processor(context);
-                if (upgrades.totalDependencies + upgrades.totalDevDependencies > 0) {
-                    const dependencyTable = new Table({
-                        head: ['Package', 'Type', 'Package Version', 'Latest Version'],
-                        colWidths: [30, 18, 18, 18]
-                    });
-
-                    upgrades.results.dependencies.forEach((dependency: {package; type; currentVersion; upgrade}) => {
-                        dependencyTable.push([dependency.package, dependency.type, dependency.currentVersion, dependency.upgrade]);
-                    });
-                    upgrades.results.devDependencies.forEach((dependency: {package; type; currentVersion; upgrade}) => {
-                        dependencyTable.push([dependency.package, dependency.type, dependency.currentVersion, dependency.upgrade]);
-                    });
-                    context.important.insert({
-                        message: `Available Dependency Updates`.underline.cyan
-                    });
-                    /*tslint:disable */
-                    console.log(dependencyTable.toString());
-                    /*tslint:enable */
-                } else {
-                    context.important.insert({
-                        message: `All dependencies are up to date`.green
-                    });
-                }
+                await scanner.processor(context);
             } catch (e) {
                 context.errors.insert({ message: e.message });
             }

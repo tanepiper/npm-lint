@@ -1,52 +1,86 @@
 import * as ncu from 'npm-check-updates';
 import * as types from '../src/types';
 
+import * as Table from 'cli-table';
+
 module.exports = {
     name: 'Dependency Version Check',
     key: 'dependency_version_check',
-    processor: async (context: types.IContextObject) => {
+    processor: async (context: types.IContextObject): Promise<void> => {
 
-        let allPackages: string[] = context.package.dependencies && Object.keys(context.package.dependencies || {});
-        if (context.package.devDependencies) {
-            allPackages = allPackages.concat(Object.keys(context.package.devDependencies || {}));
+        const pkg: types.IPackage = context.package || { name: '', version: '', dependencies: {}, devDependencies: {} };
+
+        if (Object.keys(pkg.dependencies).length === 0 && Object.keys(pkg.devDependencies)) {
+            return;
+        }
+
+        let allPackages: string[] = Object.keys(pkg.dependencies || {});
+        if (pkg.devDependencies) {
+            allPackages = allPackages.concat(Object.keys(pkg.devDependencies || []));
         }
 
         let result: { upgrades; totalUpgrades };
         try {
             result = await ncu
                 .run({
-                    packageData: JSON.stringify(context.package),
+                    packageData: JSON.stringify(pkg),
                     args: allPackages,
                     silent: true,
                     jsonUpgraded: true
                 })
                 .then((upgrades: object) => {
+                    const packages = Object.keys(upgrades).reduce(
+                        (output: { dependencies: object[]; devDependencies: object[] }, upgrade: string): any => {
+                            if (pkg.dependencies[upgrade]) {
+                                output.dependencies.push({
+                                    package: upgrade,
+                                    currentVersion: pkg.dependencies[upgrade],
+                                    upgrade: upgrades[upgrade],
+                                    type: 'dependencies'
+                                });
+                            } else if (pkg.devDependencies[upgrade]) {
+                                output.dependencies.push({
+                                    package: upgrade,
+                                    currentVersion: pkg.devDependencies[upgrade],
+                                    upgrade: upgrades[upgrade],
+                                    type: 'devDependencies'
+                                });
+                            }
+                            return output;
+                        },
+                        { dependencies: [], devDependencies: [] }
+                    );
 
-                    const results = Object.keys(upgrades).reduce((output: {dependencies: object[], devDependencies: object[]}, pkg: string): any => {
-                        if (context.package.dependencies[pkg]) {
-                            output.dependencies.push({
-                                package: pkg,
-                                currentVersion: context.package.dependencies[pkg],
-                                upgrade: upgrades[pkg],
-                                type: 'dependencies'
-                            });
-                        } else if (context.package.devDependencies[pkg]) {
-                            output.dependencies.push({
-                                package: pkg,
-                                currentVersion: context.package.devDependencies[pkg],
-                                upgrade: upgrades[pkg],
-                                type: 'devDependencies'
-                            });
-                        }
-                        return output;
-                    }, {dependencies: [], devDependencies: []});
-                    return {
-                        results,
-                        totalDependencies: results.dependencies && results.dependencies.length || 0,
-                        totalDevDependencies: results.dependencies && results.devDependencies.length || 0
+                    const results: { totalDependencies; totalDevDependencies; packages } = {
+                        packages,
+                        totalDependencies: (packages.dependencies && packages.dependencies.length) || 0,
+                        totalDevDependencies: (packages.dependencies && packages.devDependencies.length) || 0
                     };
+
+                    if (results.totalDependencies + results.totalDevDependencies > 0) {
+                        const dependencyTable: Table = new Table({
+                            head: ['Package', 'Type', 'Local Version', 'Remote Version'],
+                            colWidths: [30, 18, 18, 18]
+                        });
+
+                        results.packages.dependencies.forEach((dependency: { package; type; currentVersion; upgrade }) => {
+                            dependencyTable.push([dependency.package, dependency.type, dependency.currentVersion, dependency.upgrade]);
+                        });
+                        results.packages.devDependencies.forEach((dependency: { package; type; currentVersion; upgrade }) => {
+                            dependencyTable.push([dependency.package, dependency.type, dependency.currentVersion, dependency.upgrade]);
+                        });
+                        context.important.insert({
+                            message: `Available Dependency Updates`.underline.cyan
+                        });
+                        /*tslint:disable */
+                        console.log(dependencyTable.toString());
+                        /*tslint:enable */
+                    } else {
+                        context.important.insert({
+                            message: `All dependencies are up to date`.green
+                        });
+                    }
                 });
-            return result;
         } catch (e) {
             context.errors.insert({ message: e.message });
         }
