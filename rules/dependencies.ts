@@ -11,8 +11,8 @@ export default {
      * @param {Object} package The package.json as a JSON object
      * @param {Object} The rules for this plugin
      */
-    processor: (context: types.IContextObject) => {
-        const rules: { allowLatest: boolean; checkLatest: boolean; sources: string[] } = context.rules[module.exports.key] || {};
+    processor: (context: types.IContextObject): void => {
+        const rules: types.IDependencyRules = context.rules[module.exports.key] || {};
         if (!context.package.dependencies) {
             context.warnings.insert({
                 message: `${'package.json'.yellow} does not contain dependencies property but it is present in ${'.npmlint.json'.yellow}`
@@ -26,9 +26,7 @@ export default {
         const devDependencyKeys: string[] = Object.keys(devDependencies);
 
         const allDependencies: string[] = dependencyKeys.concat(devDependencyKeys);
-        const allValues: string[] = dependencyKeys
-            .map((key: string) => dependencies[key])
-            .concat(devDependencyKeys.map((key: string) => devDependencies[key]));
+        const allValues: string[] = dependencyKeys.map((key: string) => dependencies[key]).concat(devDependencyKeys.map((key: string) => devDependencies[key]));
 
         allDependencies.forEach((dependency: string) => {
             if (!dependency) {

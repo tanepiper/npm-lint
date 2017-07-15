@@ -5,10 +5,10 @@ import * as types from './../../src/types';
 export default {
   name: 'Property Name Rule',
   key: 'properties.name',
-  processor: (context: types.IContextObject) => {
+  processor: (context: types.IContextObject): void => {
     // Rules as per https://docs.npmjs.com/files/package.json#name
 
-    const name = context.package.name;
+    const name: string = context.package.name;
 
     if (name.length > 214) {
       context.errors.insert({

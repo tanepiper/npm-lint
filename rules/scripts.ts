@@ -13,8 +13,11 @@ export default {
       return;
     }
 
-    Object.keys(context.package.scripts).forEach((scriptName: string) => {
-      const script = context.package.scripts[scriptName];
+    const rules: types.IScriptRules = context.rules.scripts;
+    const scripts: object = context.package && context.package.scripts || [];
+
+    Object.keys(scripts).forEach((scriptName: string) => {
+      const script: string = context.package.scripts[scriptName];
 
       // Find all executables called in this script
       const exeFiles: string[] = script
@@ -23,7 +26,7 @@ export default {
         .map((items: string[]) => items[0]);
 
       return exeFiles.forEach((exeFile: string) => {
-        if (!context.rules.scripts.allow.includes(exeFile)) {
+        if (!rules.allow.includes(exeFile)) {
           context.errors.insert({
             message: `${'package.json'
               .yellow} script "${scriptName.blue}" has a unknown executable "${exeFile.red}"`

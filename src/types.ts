@@ -1,16 +1,25 @@
+export interface IDependencyRules {
+    checkLatest?: boolean;
+    allowLatest?: boolean;
+    sources: string[];
+}
+
+export interface IScriptRules {
+    allow?: string[];
+}
+
 export interface IPackage {
     name: string;
     version: string;
-    scripts?: string;
+    scripts?: object;
     dependencies?: object;
     devDependencies?: object;
     npmLint?: {
         options?: object;
         rules?: {
-            scripts?: {
-                allow?: string[];
-            };
+            scripts?: IScriptRules;
             properties?: string[];
+            dependencies?: IDependencyRules;
         };
     };
 }
@@ -22,10 +31,9 @@ export interface IContextObject {
     npmLintFile?: string;
     options?: object;
     rules?: {
-        scripts?: {
-            allow?: string[];
-        };
+        scripts?: IScriptRules;
         properties?: string[];
+        dependencies?: IDependencyRules;
     };
     errors: {
         insert: (value: { message: string }) => void;
