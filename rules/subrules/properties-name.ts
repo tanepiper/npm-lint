@@ -2,10 +2,10 @@ const nameValidCheck = /^[a-zA-Z0-9_-]*$/gi;
 
 import * as types from './../../src/types';
 
-module.exports = {
+export default {
   name: 'Property Name Rule',
   key: 'properties.name',
-  processor: (context:types.ContextObject) => {
+  processor: (context: types.IContextObject) => {
     // Rules as per https://docs.npmjs.com/files/package.json#name
 
     const name = context.package.name;
@@ -28,7 +28,7 @@ module.exports = {
       });
     }
 
-    if (name.charAt(0) == name.charAt(0).toUpperCase()) {
+    if (name.charAt(0) === name.charAt(0).toUpperCase()) {
       context.errors.insert({
         message: `${'package.json'.yellow} "${'name'.blue}" property cannot start with a capital letter`
       });

@@ -1,19 +1,24 @@
-export type ContextObject = {
+export interface IContextObject {
     package: {
         name: string;
         version: string;
+        scripts: string;
     };
     options: object;
-    rules: object;
+    rules: {
+        scripts: {
+            allow: string[]
+        }
+    };
     npmLintFile: string;
     argv: object;
     errors: {
-        insert: Function;
+        insert: (value: { message: string }) => {};
     };
     warnings: {
-        insert: Function;
+        insert: (value: { message: string }) => {};
     };
     info: {
-        insert: Function;
+        insert: (value: { message: string }) => {};
     };
-};
+}

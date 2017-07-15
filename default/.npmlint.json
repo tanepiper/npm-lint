@@ -8,8 +8,7 @@
             "allow": ["node", "npm", "echo", "exit"]
         },
         "dependencies": {
-            "checkLatest": false,
-            "sources": ["latest", "https://github.com", "http://bitbucket.org"]
+            "checkLatest": false
         }
     }
 }

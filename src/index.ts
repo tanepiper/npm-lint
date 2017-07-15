@@ -3,16 +3,16 @@ import * as types from './types';
 
 let exitCode = 0;
 
-process.on('unhandledRejection', err => {
+process.on('unhandledRejection', (err: Error) => {
     /*tslint:disable */
     console.log(err.stack);
     process.exit(1);
     /*tslint:enable */
 });
 
-process.on('uncaughtException', exception => {
+process.on('uncaughtException', (exception: Error) => {
     /*tslint:disable */
-    console.log(exception); // to see your exception details in the console
+    console.log(exception.stack); // to see your exception details in the console
     process.exit(1);
     /*tslint:enable */
 });
@@ -24,6 +24,8 @@ import { argv } from 'yargs';
 import * as loki from 'lokijs';
 import * as Table from 'cli-table';
 import * as winston from 'winston';
+
+import createContext from './lib/create-context';
 
 const finalResults = new loki('npm-lint.json');
 
@@ -55,11 +57,11 @@ dataObj.errors.on('insert', (result: Error) => {
     if (!exitCode) {
         exitCode = 1;
     }
-    winston.error(`Error: ${result.message}`.red);
+    winston.error(`${result.message}`.red);
 });
 
 dataObj.warnings.on('insert', (result: Error) => {
-    winston.info(`Warning: ${result.message}`.yellow);
+    winston.warn(`Warning: ${result.message}`.yellow);
 });
 
 dataObj.important.on('insert', (result: Error) => {
@@ -70,9 +72,7 @@ dataObj.important.insert({
     message: `${`Running npm-linter`.green}`.underline.bgBlue
 });
 
-const createContext = require('./lib/create-context');
-
-const init = async function init() {
+const init = async () => {
     let context;
     try {
         context = await createContext(dataObj);
@@ -87,11 +87,11 @@ const init = async function init() {
     return context;
 };
 
-const run = async function run(context: types.ContextObject) {
-    await Object.keys(context.rules).forEach(async ruleKey => {
+const run = async (context: types.IContextObject) => {
+    await Object.keys(context.rules).forEach(async (ruleKey: string) => {
         let rules;
         try {
-            rules = require(`./../rules/${ruleKey}`);
+            rules = require(`./../rules/${ruleKey}`).default;
         } catch (e) {
             context.errors.insert({ message: e.message });
         }
@@ -107,13 +107,13 @@ const run = async function run(context: types.ContextObject) {
     });
 };
 
-init().then(async context => {
+init().then(async (context) => {
     run(context).then(async () => {
         const table = new Table();
 
         table.push({ 'Total Errors': context.errors.count() }, { 'Total Warnings': context.warnings.count() });
 
-        console.log(table.toString());
+        winston.log(table.toString());
 
         if (context.rules.dependencies.checkLatest) {
             context.important.insert({
@@ -121,14 +121,15 @@ init().then(async context => {
             });
             const scanner = require('./../scans/dependency_version_check');
 
+            let upgrades;
             try {
-                let upgrades = await scanner.processor(context);
+                upgrades = await scanner.processor(context);
                 if (upgrades.upgrades && Object.keys(upgrades.upgrades).length > 0) {
-                    const table = new Table({
+                    const dependencyTable = new Table({
                         head: ['Package', 'Type', 'Package Version', 'Latest Version'],
                         colWidths: [40, 30, 30, 30]
                     });
-                    Object.keys(upgrades.upgrades).forEach(upgrade => {
+                    Object.keys(upgrades.upgrades).forEach((upgrade) => {
                         let dep;
                         let type = 'dependency';
                         if (context.package.dependencies[upgrade]) {
@@ -138,12 +139,12 @@ init().then(async context => {
                             type = 'devDependency';
                         }
 
-                        table.push([upgrade, type, dep, upgrades.upgrades[upgrade]]);
+                        dependencyTable.push([upgrade, type, dep, upgrades.upgrades[upgrade]]);
                     });
                     context.important.insert({
                         message: `Available Dependency Updates`.underline.cyan
                     });
-                    console.log(table.toString());
+                    winston.log(table.toString());
                 } else {
                     context.important.insert({
                         message: `All dependencies are up to date`.green

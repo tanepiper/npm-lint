@@ -1,12 +1,12 @@
-const defaultNpmLint = require(`${__dirname}/../../default/.npmlint.json`);
-
 // Allows us to support older node version
 import promisify = require('util.promisify');
 
 import fs = require('fs');
 const readFileAsync = promisify(fs.readFile);
 
-module.exports = async (dataObj: any): Promise<object> => {
+import * as constants from 'constants';
+
+export default async (dataObj: any): Promise<object> => {
   const context = {
       packageFile: `${dataObj.workingDirectory}/package.json`,
       npmLintFile: '',
@@ -31,15 +31,6 @@ module.exports = async (dataObj: any): Promise<object> => {
   // Next we parse the package.json for a npmLint key, if there is not one we take this
   // opertunity to set default values or an empty object in case of issues
   let npmLint;
-  context.options =
-    (pkg.npmLint && pkg.npmLint.options) || defaultNpmLint.options || {};
-  context.rules =
-    (pkg.npmLint && pkg.npmLint.rules) || defaultNpmLint.rules || {};
-  context.npmLintFile =
-    Object.keys(context.options).length > 0 ||
-    Object.keys(context.rules).length > 0
-      ? `${dataObj.workingDirectory}/package.json`
-      : `${__dirname}/../default/.npmlint.json`;
 
   // Now we try read the local .npmlint.json which overides all settings
   try {

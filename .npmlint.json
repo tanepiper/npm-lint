@@ -5,8 +5,7 @@
             "allow": ["node", "npm", "ava", "webpack", "ts-node"]
         },
         "dependencies": {
-            "checkLatest": true,
-            "sources": ["https://github.com"]
+            "checkLatest": true
         }
     }
 }

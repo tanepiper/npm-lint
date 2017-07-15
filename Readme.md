@@ -11,11 +11,11 @@ A opinionated, but configurable linter for npm &amp; node package.json files wit
 
 > **Please note the APIs and commands are likely to change quite a bit**
 
-## Concept
+## What is npm-lint?
 
-This is an early concept for a tool that reads a `.npmlint.json` file in a directory and from this can parse a `package.json` file and enforce these rules.
+A tool that reads a `.npmlint.json` file in a directory and from this can parse a `package.json` file and enforce these rules.
 
-The concept on this tool is to enforce rules across many repositories within your organisation. By putting a `.npmlint.json` file in your root directory and running `npm-lint` the tool will check the file to ensure it meets your configuration.
+It's designed to enforce rules across many repositories within your organisation. By putting a `.npmlint.json` file in your root directory and running `npm-lint` the tool will check the file to ensure it meets your configuration.
 
 The focus is on security and being able to lock down where dependencies are resolved from, and where packages are published too and being able to implement this in pre-commit/pre-push hooks or CI environments
 
@@ -64,6 +64,6 @@ The currently implemented options are:
 >            "https://github.com",
 >            "https://git.myrepo.com/myrepo.git"
 >        ]
->    }    
+>    }
 > }
 > ```

@@ -1,7 +1,7 @@
-const propertyName = require('./subrules/properties-name');
-const propertyVersion = require('./subrules/properties-version');
+import propertyName from './subrules/properties-name';
+import propertyVersion from './subrules/properties-version';
 
-module.exports = {
+export default {
     name: 'Properties Rules',
     description:
         'Handles the checking of properties within a package.json file',
