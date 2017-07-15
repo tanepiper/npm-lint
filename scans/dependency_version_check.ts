@@ -10,6 +10,7 @@ module.exports = {
 
         const pkg: types.IPackage = context.package || { name: '', version: '', dependencies: {}, devDependencies: {} };
 
+        // No dependency check if we don't have anything to check
         if (Object.keys(pkg.dependencies).length === 0 && Object.keys(pkg.devDependencies)) {
             return;
         }
@@ -19,9 +20,8 @@ module.exports = {
             allPackages = allPackages.concat(Object.keys(pkg.devDependencies || []));
         }
 
-        let result: { upgrades; totalUpgrades };
         try {
-            result = await ncu
+            await ncu
                 .run({
                     packageData: JSON.stringify(pkg),
                     args: allPackages,
