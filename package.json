@@ -38,6 +38,7 @@
     "type": "git",
     "url": "https://github.com/tanepiper/npm-lint.git"
   },
+  "types": "./index.d.ts",
   "author": "Tane Piper <piper.tane@gmail.com>",
   "license": "MIT",
   "dependencies": {

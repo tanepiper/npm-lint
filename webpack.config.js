@@ -28,15 +28,10 @@ module.exports = {
       `${__dirname}/scans/`
     ),
     new webpack.BannerPlugin({
-      banner: 'require("source-map-support").install();',
+      banner: `#!/usr/bin/env node\nrequire("source-map-support").install();`,
       raw: true,
       entryOnly: false
     }),
-    new webpack.BannerPlugin({
-      banner: '#!/usr/bin/env node',
-      raw: true,
-      entryOnly: false
-    })
   ],
   module: {
     loaders: [{
