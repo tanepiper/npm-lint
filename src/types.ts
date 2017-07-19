@@ -12,6 +12,7 @@ export interface IPackage {
     name: string;
     version: string;
     scripts?: object;
+    private?: boolean;
     dependencies?: object;
     devDependencies?: object;
     npmLint?: {
@@ -37,7 +38,10 @@ export interface IContextObject {
     options?: object;
     rules?: {
         scripts?: IScriptRules;
-        properties?: string[];
+        properties?: {
+            private?: boolean;
+            required?: string[]
+        };
         dependencies?: IDependencyRules;
     };
     errors?: {

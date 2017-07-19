@@ -21,7 +21,7 @@ export default async (currentContext: types.IContextObject): Promise<object> => 
         }
     } catch (e) {
         // Check if there is a options list in the package.json
-        if (currentContext.package && currentContext.package.npmLint) {
+        if (currentContext.package && typeof currentContext.package.npmLint !== 'undefined') {
             npmLint.options = currentContext.package.npmLint.options || {};
             npmLint.rules = currentContext.package.npmLint.rules || {};
             npmLint.lintFile = `${currentContext.workingDirectory}/package.json`;

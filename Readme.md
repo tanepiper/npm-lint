@@ -7,7 +7,7 @@ A opinionated, but configurable linter for npm &amp; node package.json files wit
 
 `npm i -g npm-lint`
 
-`npm-lint` is build using Node 8 as it uses `async/await` - however the distribution is compiled and has been tested with Node 4 and Node 6.
+`npm-lint` is build using Typescript on top of `node 8` as it uses `async/await` - however the distribution is compiled and confirmed to work with `node >= 6.5.0`.
 
 > **Please note the APIs and commands are likely to change quite a bit**
 
@@ -30,7 +30,10 @@ The currently implemented options are:
 > **Example**
 > ```json
 > {
->     "properties": ["description", "main", "author", "license"]
+>     "properties": {
+        "private": true,
+        "required": ["description", "main", "author", "license"]
+      }
 > }
 > ```
 

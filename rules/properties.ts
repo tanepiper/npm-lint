@@ -1,25 +1,23 @@
 import propertyName from './subrules/properties-name';
 import propertyVersion from './subrules/properties-version';
+import propertyPrivate from './subrules/properties-version';
 
 import * as types from '../src/types';
 
 export default {
     name: 'Properties Rules',
-    description:
-        'Handles the checking of properties within a package.json file',
+    description: 'Handles the checking of properties within a package.json file',
     key: 'properties',
     processor: async (context: types.IContextObject): Promise<void> => {
-
-        const rules: string[] = context.rules[module.exports.key];
-        if (!rules || rules && rules.length === 0) {
+        const rules: { required?: string[]; private?: boolean } = context.rules.properties;
+        if (!rules) {
             return;
         }
 
-        rules.forEach((property: string): void => {
+        (rules.required || []).forEach((property: string): void => {
             if (!context.package[property]) {
                 context.errors.insert({
-                    message: `${'package.json'
-                        .yellow} must have property "${property.yellow}"`
+                    message: `${'package.json'.yellow} must have property "${property.yellow}"`
                 });
             }
 
@@ -29,5 +27,9 @@ export default {
                 propertyVersion.processor(context);
             }
         });
+
+        if (typeof rules.private !== 'undefined' && rules.private === true) {
+            propertyPrivate.processor(context);
+        }
     }
 };

@@ -23,14 +23,14 @@ export default async (currentContext: types.IContextObject): Promise<types.ICont
         // console.log(context);
 
         // Now we need to add name and version to always be checked in properties
-        if (!context.rules.properties) {
-            context.rules.properties = ['name', 'version'];
+        if (!context.rules.properties.required) {
+            context.rules.properties.required = ['name', 'version'];
         } else {
-            if (!context.rules.properties.includes('name')) {
-                context.rules.properties.push('name');
+            if (!context.rules.properties.required.includes('name')) {
+                context.rules.properties.required.push('name');
             }
-            if (!context.rules.properties.includes('version')) {
-                context.rules.properties.push('version');
+            if (!context.rules.properties.required.includes('version')) {
+                context.rules.properties.required.push('version');
             }
         }
 

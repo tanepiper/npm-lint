@@ -11,6 +11,7 @@ export enum ExitCodes {
 export const DEFAULT_CONFIG = {
     options: {},
     rules: {
+        isPrivate: true,
         properties: ['description', 'main', 'author', 'license'],
         scripts: {
             allow: ['node', 'npm', 'echo', 'exit']

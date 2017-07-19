@@ -18,7 +18,8 @@
     "npm-lint": "bin/index.js"
   },
   "engines": {
-    "node": ">=v4.8.4"
+    "node": ">=v6.5.0",
+    "npm": ">=3.10.0"
   },
   "files": [
     "bin/**/*",
@@ -75,7 +76,7 @@
     "ts-loader": "^2.3.1",
     "ts-node": "^3.2.0",
     "tslint": "^5.5.0",
-    "typescript": "^2.4.1",
+    "typescript": "^2.4.2",
     "webpack": "^3.3.0",
     "webpack-node-externals": "^1.6.0"
   },
