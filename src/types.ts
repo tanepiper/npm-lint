@@ -25,7 +25,12 @@ export interface IPackage {
 }
 
 export interface IContextObject {
-    workingDirectory: string;
+    _?: object;
+    $0?: string;
+    argv?: object;
+    registry?: string;
+    forceDependencyCheck?: boolean;
+    workingDirectory?: string;
     package?: IPackage;
     packageFile?: string;
     npmLintFile?: string;
@@ -35,19 +40,19 @@ export interface IContextObject {
         properties?: string[];
         dependencies?: IDependencyRules;
     };
-    errors: {
+    errors?: {
         insert: (value: { message: string }) => void;
         on: (event: string, cb: (result: Error) => void) => void;
     };
-    warnings: {
+    warnings?: {
         insert: (value: { message: string }) => void;
         on: (event: string, cb: (result: Error) => void) => void;
     };
-    info: {
+    info?: {
         insert: (value: { message: string }) => void;
         on: (event: string, cb: (result: Error) => void) => void;
     };
-    important: {
+    important?: {
         insert: (value: { message: string }) => void;
         on: (event: string, cb: (result: Error) => void) => void;
     };

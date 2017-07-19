@@ -3,25 +3,25 @@
  */
 
 import BPromise = require('bluebird');
+import * as types from '../types';
 
 import got = require('got');
 import url = require('url');
-import registryUrl = require('registry-url');
 import registryAuthToken = require('registry-auth-token');
-import semver = require('semver');
+import * as semver from 'semver';
 
-export default async allPackages => {
+export default async (currentContext: types.IContextObject, allPackages: string[]) => {
     const pkgs = await BPromise.map(allPackages, (packagename: string) => {
-        const scope = packagename.split('/')[0];
-        const regUrl = registryUrl(scope);
+        const regUrl = currentContext.registry || `https://registry.npmjs.org/`;
         const pkgUrl = url.resolve(regUrl, encodeURIComponent(packagename).replace(/^%40/, '@'));
         const authInfo = registryAuthToken(regUrl, { recursive: true });
         const opts: { version; allVersions? } = {
             version: 'latest'
         };
 
-        const headers: { accept; authorization? } = {
-            accept: 'application/vnd.npm.install-v1+json; q=1.0, application/json; q=0.8, */*'
+        const headers: { accept; authorization?; 'user-agent'? } = {
+            accept: 'application/vnd.npm.install-v1+json; q=1.0, application/json; q=0.8, */*',
+            'user-agent': 'npm-lint version <=1.0.0'
         };
 
         // if (opts.fullMetadata) {
@@ -49,14 +49,18 @@ export default async allPackages => {
                         version = semver.maxSatisfying(versions, version);
 
                         if (!version) {
-                            throw new Error("Version doesn't exist");
+                            return currentContext.errors.insert({
+                                message: `Version doesn't exist ${version} for ${packagename}`
+                            });
                         }
                     }
 
                     data = data.versions[version];
 
                     if (!data) {
-                        throw new Error("Version doesn't exist");
+                        return currentContext.errors.insert({
+                            message: `Version doesn't exist ${version} for ${packagename}`
+                        });
                     }
                 }
 
@@ -64,10 +68,14 @@ export default async allPackages => {
             })
             .catch(err => {
                 if (err.statusCode === 404) {
-                    throw new Error(`Package \`${packagename}\` doesn't exist`);
+                    return currentContext.errors.insert({
+                        message: `Package "${packagename}" doesn't exist`
+                    });
                 }
 
-                throw err;
+                currentContext.errors.insert({
+                    message: err.status
+                });
             });
     });
 

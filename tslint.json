@@ -10,6 +10,7 @@
         ],
         "arrow-parens": [
             false
-        ]
+        ],
+        "object-literal-key-quotes": [ false ]
     }
 }

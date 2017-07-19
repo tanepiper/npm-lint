@@ -5,7 +5,7 @@ const readFileAsync = promisify(fs.readFile);
 
 import * as types from '../types';
 
-export default async (currentContext: types.IContextObject): Promise<object> => {
+export default async (currentContext: types.IContextObject): Promise<types.IPackage> => {
 
     // First we try load the package.json where this command has been run
     try {

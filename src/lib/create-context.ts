@@ -7,13 +7,20 @@ export default async (currentContext: types.IContextObject): Promise<types.ICont
     // First we try load the package.json where this command has been run
     try {
         const pkg = await loadPackage(currentContext);
-        const npmLint = await loadRules(currentContext);
 
-        const context: types.IContextObject = {
+        const packageContext: types.IContextObject = {
             package: pkg,
-            ...npmLint,
             ...currentContext
         };
+        // console.log(packageContext);
+
+        const npmLint = await loadRules(packageContext);
+
+        const context: types.IContextObject = {
+            ...packageContext,
+            ...npmLint
+        };
+        // console.log(context);
 
         // Now we need to add name and version to always be checked in properties
         if (!context.rules.properties) {

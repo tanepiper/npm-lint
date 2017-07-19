@@ -3,7 +3,7 @@ import * as types from '../src/types';
 import fetchPackages from '../src/lib/fetch-packages';
 import getValidSemver from '../src/lib/get-valid-semver';
 
-import semver = require('semver');
+import * as semver from 'semver';
 import Table = require('cli-table');
 
 export default {
@@ -16,28 +16,47 @@ export default {
             return;
         }
 
-        let allPackages: string[] = Object.keys(pkg.dependencies || {});
+        let allPackages: string[] = Object.keys(pkg.dependencies || {})
+            .map(key => {
+                if (getValidSemver(pkg.dependencies[key])) {
+                    return key;
+                }
+                return null;
+            })
+            .filter(f => f);
         if (pkg.devDependencies) {
-            allPackages = allPackages.concat(Object.keys(pkg.devDependencies || []));
+            allPackages = allPackages.concat(
+                Object.keys(pkg.devDependencies || {})
+                    .map(key => {
+                        if (getValidSemver(pkg.devDependencies[key])) {
+                            return key;
+                        }
+                        return null;
+                    })
+                    .filter(f => f)
+            );
         }
 
         try {
-            const pkgs = await fetchPackages(allPackages);
-            const dependencyTable: Table = new Table({
+            const pkgs = await fetchPackages(context, allPackages);
+            const dependencyTable = new Table({
                 head: ['Package', 'Type', 'Local Version', 'Remote Version'],
                 colWidths: [30, 18, 18, 18]
             });
             let totalUpdates = 0;
             pkgs.forEach(potentialUpdate => {
-                let type = 'dependency';
+                let type = 'dependency'.cyan;
                 let existingSemver = getValidSemver(pkg.dependencies[potentialUpdate.name]);
                 if (!existingSemver) {
                     existingSemver = getValidSemver(pkg.devDependencies[potentialUpdate.name]);
-                    type = 'devDependency';
+                    type = 'devDependency'.magenta;
+                }
+                if (!existingSemver) {
+                    return;
                 }
                 if (semver.gt(potentialUpdate.version, existingSemver)) {
                     totalUpdates = totalUpdates + 1;
-                    dependencyTable.push([potentialUpdate.name, type, existingSemver, potentialUpdate.version]);
+                    dependencyTable.push([`${potentialUpdate.name}`.yellow.bold, type, `${existingSemver}`.grey, `${potentialUpdate.version}`.green]);
                 }
             });
 

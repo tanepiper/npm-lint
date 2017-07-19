@@ -22,13 +22,15 @@ import 'colors';
 import { argv } from 'yargs';
 
 import * as loki from 'lokijs';
-import * as Table from 'cli-table';
+import Table = require('cli-table');
 import createContext from './lib/create-context';
 
 const finalResults = new loki('npm-lint.json');
 
 const init = async (): Promise<types.IContextObject> => {
     let context: types.IContextObject = {
+        ...argv,
+        forceDependencyCheck: argv.forcecheck || false,
         workingDirectory: process.cwd(),
         important: finalResults.addCollection('important', {
             disableChangesApi: false
@@ -109,7 +111,7 @@ const run = async (context: types.IContextObject) => {
 
 init().then(async (context: any) => {
     run(context).then(async () => {
-        const table = new Table();
+        const table = new Table({});
 
         table.push({ 'Total Errors': context.errors.count() }, { 'Total Warnings': context.warnings.count() });
 
@@ -117,7 +119,7 @@ init().then(async (context: any) => {
         console.log(table.toString());
         /*tslint:enable */
 
-        if (context.rules.dependencies && context.rules.dependencies.checkLatest) {
+        if (context.forceDependencyCheck || context.rules.dependencies && context.rules.dependencies.checkLatest) {
             context.important.insert({
                 message: `Doing dependency version check`.green
             });
