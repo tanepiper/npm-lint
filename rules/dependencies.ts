@@ -39,7 +39,6 @@ export default {
             const semverOrPath: string = allValues[valueIndex];
 
             // Check we have a semver range, and grab the package version value
-            // Regexp from https://github.com/sindresorhus/semver-regex
             const validSemver: string | null = getValidSemver(semverOrPath);
             if (validSemver && semver.valid(validSemver)) {
                 return;

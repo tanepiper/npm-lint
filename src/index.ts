@@ -121,7 +121,7 @@ init().then(async (context: any) => {
             context.important.insert({
                 message: `Doing dependency version check`.green
             });
-            const scanner = require('./../scans/dependency_version_check');
+            const scanner = require('./../scans/dependency_version_check').default;
 
             try {
                 await scanner.processor(context);
