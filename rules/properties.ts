@@ -28,6 +28,7 @@ export default {
             }
         });
 
+        console.log(typeof rules.private !== 'undefined' && rules.private === true);
         if (typeof rules.private !== 'undefined' && rules.private === true) {
             propertyPrivate.processor(context);
         }

@@ -2,7 +2,7 @@
     "rules": {
         "properties": {
             "private": true,
-            "require": ["description", "main", "author", "license", "publishConfig", "main", "bin", "files", "ava", "repository"]
+            "required": ["description", "main", "author", "license", "publishConfig", "main", "bin", "files", "ava", "repository"]
         },
         "scripts": {
             "allow": ["node", "npm", "ava", "webpack", "ts-node"]
