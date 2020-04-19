@@ -1,4 +1,4 @@
-# npm-linter
+# npm-lint
 A opinionated, but configurable linter for npm &amp; node package.json files with a focus on security.
 
 [Github](https://github.com/tanepiper/npm-lint) | [Issues](https://github.com/tanepiper/npm-lint/issues) | [NPM](https://www.npmjs.com/package/npm-lint)
